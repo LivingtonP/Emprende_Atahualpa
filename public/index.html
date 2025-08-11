@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="../src/index.css" />
+    <link rel="stylesheet" href="../header.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+    <title>Tienda en linea LPM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <!-- Contenedor para insertar el header -->
+    <div id="header-container"></div>
+
+    <!-- HERO SECTION -->
+<section class="hero-section" id="inicio">
+    <img src="../src/img/fondo.png" alt="Fondo portada" class="hero-image" />
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">Tu tienda en línea</h1>
+        <p class="hero-subtitle">Descubre tus gustos en nuestro catálogo | ¡Bueno, bonito y barato!</p>
+        <a href="#productos" class="btn-primary">Ver ropa</a>
+    </div>
+</section>
+
+
+<!-- FILTER BAR NUEVO -->
+<section class="filter-bar">
+<div class="filter-group">
+<p class="filter-title">Filtros</p>
+<div class="filters-container">
+
+    <div class="filter-dropdown" data-filter="category">
+    <button class="filter-btn">
+        <i class="fas fa-layer-group"></i>
+        <span class="filter-label">Categoría</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </button>
+    <ul class="filter-list">
+        <li data-value="all" class="active">Todas</li>
+        <li data-value="mujer">Mujer</li>
+        <li data-value="hombre">Hombre</li>
+        <li data-value="accesorios">Accesorios</li>
+    </ul>
+    </div>
+
+    <div class="filter-dropdown" data-filter="size">
+    <button class="filter-btn">
+        <i class="fas fa-ruler"></i>
+        <span class="filter-label">Talla</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </button>
+    <ul class="filter-list">
+        <li data-value="all" class="active">Todas</li>
+        <li data-value="XS">XS</li>
+        <li data-value="S">S</li>
+        <li data-value="M">M</li>
+        <li data-value="L">L</li>
+        <li data-value="XL">XL</li>
+    </ul>
+    </div>
+
+    <div class="filter-dropdown" data-filter="price">
+    <button class="filter-btn">
+        <i class="fas fa-dollar-sign"></i>
+        <span class="filter-label">Precio</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </button>
+    <ul class="filter-list">
+        <li data-value="all" class="active">Todos</li>
+        <li data-value="0-50">$0 - $50</li>
+        <li data-value="50-100">$50 - $100</li>
+        <li data-value="100-200">$100 - $200</li>
+        <li data-value="200+">$200+</li>
+    </ul>
+    </div>
+
+    <div class="filter-dropdown" data-filter="sort">
+    <button class="filter-btn">
+        <i class="fas fa-sort"></i>
+        <span class="filter-label">Ordenar</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </button>
+    <ul class="filter-list">
+        <li data-value="featured" class="active">Destacados</li>
+        <li data-value="newest">Más nuevos</li>
+        <li data-value="price-low">Precio: Bajo a alto</li>
+        <li data-value="price-high">Precio: Alto a bajo</li>
+        <li data-value="rating">Mejor valorados</li>
+    </ul>
+    </div>
+
+</div>
+<button class="btn-clear-filters" aria-label="Limpiar filtros">
+    <i class="fas fa-times-circle"></i> Limpiar filtros
+</button>
+</div>
+</section>
+
+
+
+<!-- PRODUCTS SECTION -->
+<main>
+    <section class="products-section" id="productos">
+        <div class="section-header">
+            <h2 class="section-title">Prendas destacadas</h2>
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="grid" aria-pressed="true" aria-label="Vista en cuadrícula">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="view-btn" data-view="list" aria-pressed="false" aria-label="Vista en lista">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+        <div class="products-grid" id="productsGrid"></div>
+    </section>
+</main>
+
+
+    <!-- Script que carga dinámicamente el header -->
+    <script>
+    window.addEventListener('DOMContentLoaded', () => {
+    fetch('header.html')
+        .then(response => response.text())
+        .then(data => {
+        document.getElementById('header-container').innerHTML = data;
+
+        // Aquí el header ya está cargado en el DOM
+        // Ahora puedes asignar los eventos de filtro a los enlaces
+        const filterLinks = document.querySelectorAll('.filter-link');
+        filterLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const categoria = link.getAttribute('data-category');
+            filtrarPorCategoria(categoria);
+            });
+        });
+
+    });
+});
+
+// Necesitas esta función para filtrar y renderizar
+function filtrarPorCategoria(categoria) {
+  // Como no tienes acceso a productos aquí, usa import/export (ver opción 2)
+  // O, si tienes un módulo JS para filtros, llama desde ahí.
+}
+</script>
+
+
+    <!-- Tu script principal de productos -->
+    <script type="module" src="main.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
