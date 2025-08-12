@@ -5,37 +5,38 @@
         <p>🚚 Envío gratis en pedidos superiores a $25 | No se aceptan devoluciones una vez entregado</p>
         <p>📍 Envíos gratis dentro de la parroquia Atahualpa</p>
     </div>
-
+    
     <!-- Barra de navegación -->
     <nav class="navbar container">
+        <!-- Botón menú hamburguesa (visible solo en móvil) -->
+        <div class="menu-toggle" id="menuToggle">
+            ☰
+        </div>
         <!-- Logo -->
         <a class="logo" href="#">ATAHUALPA</a>
-
+        
+        
+    
         <!-- Menú -->
-        <ul class="nav-links">
+        <ul class="nav-links" id="navLinks">
             <li><a href="#inicio" id="linkInicio">Inicio</a></li>
             <li><a href="#mujer" class="filter-link" data-category="mujer">Mujer</a></li>
             <li><a href="#hombre" class="filter-link" data-category="hombre">Hombre</a></li>
             <li><a href="#prendasdesegunda" class="filter-link" data-category="prendaU">Prendas de segunda</a></li>
             <li><a href="#ofertas" class="filter-link" data-category="prendaOfertas">Ofertas</a></li>
         </ul>
-
-
-
-
+        
         <!-- Buscador -->
         <form class="search-bar" role="search">
             <input type="search" placeholder="Buscar productos..." aria-label="Buscar">
             <button type="submit"><i class="fas fa-search"></i></button>
         </form>
-
+        
         <!-- Iconos -->
         <div class="icons">
             <a href="#"><i class="fas fa-user"></i></a>
-            <a href="#"><i class="fas fa-heart"></i></a>
             <a href="#" class="cart">
                 <i class="fas fa-shopping-bag"></i>
-                <span class="badge">2</span>
             </a>
         </div>
     </nav>
