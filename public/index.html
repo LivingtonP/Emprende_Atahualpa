@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/index.css" />
-    <link rel="stylesheet" href="/header.css">
+    <!-- Cambiar rutas absolutas a relativas -->
+    <link rel="stylesheet" href="./index.css" />
+    <link rel="stylesheet" href="./header.css">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
@@ -20,7 +21,7 @@
 
     <!-- HERO SECTION -->
 <section class="hero-section" id="inicio">
-    <img src="../src/img/fondo.png" alt="Fondo portada" class="hero-image" />
+    <img src="./src/img/fondo.png" alt="Fondo portada" class="hero-image" />
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <h1 class="hero-title">Tu tienda en línea</h1>
@@ -72,7 +73,7 @@
         <i class="fas fa-chevron-down arrow"></i>
     </button>
     <ul class="filter-list">
-        <li data-value="all" class="active">Todos</li>
+        <li data-value="all" class="active">Todas</li>
         <li data-value="0-50">$0 - $50</li>
         <li data-value="50-100">$50 - $100</li>
         <li data-value="100-200">$100 - $200</li>
@@ -182,7 +183,8 @@
     window.addEventListener('DOMContentLoaded', () => {
         console.log('DOM cargado, iniciando carga del header...');
         
-        fetch('/header.html')
+        // Cambiar la ruta del fetch también
+        fetch('./header.html')
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -212,7 +214,7 @@
     </script>
 
     <!-- Tu script principal de productos -->
-    <script type="module" src="main.js" defer></script>
+    <script type="module" src="./main.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

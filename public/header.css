@@ -56,7 +56,7 @@ body {
     cursor: pointer;
     background: none;
     border: none;
-    color: #0f0e0e;
+    color: #333; /* Cambiado de #0f0e0e a #333 para mejor contraste */
     padding: 0.5rem;
     z-index: 1001;
 }
@@ -68,14 +68,12 @@ body {
     gap: 1.5rem;
     margin: 0;
     padding: 0;
-    
-    
 }
 
 .nav-links a {
     text-decoration: none;
     font-weight: 500;
-    color: #eee1e1;
+    color: #333; /* CORREGIDO: Cambiado de #eee1e1 (casi blanco) a #333 (gris oscuro) */
     transition: color 0.3s;
     padding: 0.5rem 1rem;
 }
@@ -179,6 +177,7 @@ body {
         order: 1;
         flex: 0 0 auto;
         padding: 0.4rem;
+        color: #333; /* Asegurar que sea visible */
     }
     
     /* Logo después del menú hamburguesa */
@@ -239,9 +238,9 @@ body {
         z-index: 1000;
     }
     
-    /* Enlaces del menú móvil */
+    /* Enlaces del menú móvil - CORREGIDO: color blanco para fondo oscuro */
     .nav-links a {
-        color: white;
+        color: white; /* Perfecto para el fondo oscuro #171618 */
         padding: 0.75rem 1.5rem;
         border-bottom: 1px solid #333;
         display: block;
