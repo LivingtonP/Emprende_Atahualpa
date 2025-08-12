@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="./index.css" />
-    <link rel="stylesheet" href="./header.css">
+    <link rel="stylesheet" href="/index.css" />
+    <link rel="stylesheet" href="/header.css">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
@@ -182,7 +182,7 @@
     window.addEventListener('DOMContentLoaded', () => {
         console.log('DOM cargado, iniciando carga del header...');
         
-        fetch('header.html')
+        fetch('/header.html')
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
