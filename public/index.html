@@ -121,16 +121,40 @@
     </section>
 </main>
 
+    <!-- REEMPLAZAR TODO ESTE SCRIPT POR EL DE DIAGNÓSTICO -->
     <script>
-    // Función para configurar el menú hamburguesa
+    // Función para configurar el menú hamburguesa - VERSIÓN DIAGNÓSTICO
     function setupMobileMenu() {
         const menuToggle = document.getElementById('menuToggle');
         const navLinks = document.getElementById('navLinks');
         
+        console.log('=== DIAGNÓSTICO COMPLETO ===');
         console.log('MenuToggle:', menuToggle);
         console.log('NavLinks:', navLinks);
         
         if (menuToggle && navLinks) {
+            // DIAGNÓSTICO INICIAL
+            console.log('=== ESTADO INICIAL ===');
+            console.log('Ancho ventana:', window.innerWidth);
+            console.log('NavLinks innerHTML:', navLinks.innerHTML);
+            console.log('NavLinks classes iniciales:', navLinks.className);
+            
+            const computedStyles = window.getComputedStyle(navLinks);
+            console.log('Display computado:', computedStyles.display);
+            console.log('Position computado:', computedStyles.position);
+            console.log('Visibility computado:', computedStyles.visibility);
+            console.log('Z-index computado:', computedStyles.zIndex);
+            console.log('Background computado:', computedStyles.backgroundColor);
+            console.log('Width computado:', computedStyles.width);
+            console.log('Height computado:', computedStyles.height);
+            
+            // VERIFICAR SI HAY ELEMENTOS LI
+            const listItems = navLinks.querySelectorAll('li');
+            console.log('Número de elementos <li>:', listItems.length);
+            listItems.forEach((li, index) => {
+                console.log(`Li ${index}:`, li.innerHTML);
+            });
+            
             // Remover listeners previos para evitar duplicados
             menuToggle.replaceWith(menuToggle.cloneNode(true));
             const newMenuToggle = document.getElementById('menuToggle');
@@ -138,22 +162,80 @@
             newMenuToggle.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Menu toggle clicked');
+                
+                console.log('=== CLICK EN HAMBURGUESA ===');
+                console.log('Antes del toggle - classes:', navLinks.className);
+                console.log('Antes del toggle - display:', window.getComputedStyle(navLinks).display);
                 
                 navLinks.classList.toggle('show');
-                console.log('Menu classes:', navLinks.classList.toString());
+                
+                console.log('Después del toggle - classes:', navLinks.className);
+                
+                // Esperar un momento para que se apliquen los estilos
+                setTimeout(() => {
+                    const newStyles = window.getComputedStyle(navLinks);
+                    console.log('Después del toggle - display:', newStyles.display);
+                    console.log('Después del toggle - position:', newStyles.position);
+                    console.log('Después del toggle - visibility:', newStyles.visibility);
+                    console.log('Después del toggle - opacity:', newStyles.opacity);
+                    console.log('Después del toggle - transform:', newStyles.transform);
+                    
+                    // VERIFICAR POSICIÓN EN LA PANTALLA
+                    const rect = navLinks.getBoundingClientRect();
+                    console.log('Posición del menú:');
+                    console.log('- Top:', rect.top);
+                    console.log('- Left:', rect.left);
+                    console.log('- Width:', rect.width);
+                    console.log('- Height:', rect.height);
+                    console.log('- Visible en viewport:', rect.top >= 0 && rect.left >= 0 && rect.bottom <= window.innerHeight && rect.right <= window.innerWidth);
+                    
+                }, 100);
             });
             
             // Cerrar menú al hacer clic fuera
             document.addEventListener('click', function(e) {
                 if (!newMenuToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                    console.log('Click fuera del menú, cerrando...');
                     navLinks.classList.remove('show');
                 }
             });
             
-            console.log('Menu hamburguesa configurado correctamente');
+            console.log('✅ Menu hamburguesa configurado correctamente');
+            
+            // FUNCIÓN DE PRUEBA MANUAL
+            window.testMenu = function() {
+                console.log('=== PRUEBA MANUAL ===');
+                navLinks.classList.add('show');
+                console.log('Menú forzado a mostrar');
+                
+                setTimeout(() => {
+                    const styles = window.getComputedStyle(navLinks);
+                    console.log('Estado después de forzar:');
+                    console.log('- Display:', styles.display);
+                    console.log('- Visibility:', styles.visibility);
+                    console.log('- Opacity:', styles.opacity);
+                    console.log('- Position:', styles.position);
+                }, 100);
+            };
+            
+            // FUNCIÓN PARA APLICAR ESTILOS DE EMERGENCIA
+            window.forceMenuVisible = function() {
+                console.log('=== FORZANDO VISIBILIDAD ===');
+                navLinks.style.display = 'flex';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.background = 'red';
+                navLinks.style.zIndex = '9999';
+                navLinks.style.width = '250px';
+                navLinks.style.flexDirection = 'column';
+                console.log('Estilos de emergencia aplicados');
+            };
+            
         } else {
-            console.error('No se encontraron los elementos del menú');
+            console.error('❌ No se encontraron los elementos del menú');
+            console.error('MenuToggle encontrado:', !!menuToggle);
+            console.error('NavLinks encontrado:', !!navLinks);
         }
     }
 
@@ -162,7 +244,11 @@
         const filterLinks = document.querySelectorAll('.filter-link');
         const navLinks = document.getElementById('navLinks');
         
-        filterLinks.forEach(link => {
+        console.log('=== CONFIGURANDO FILTER LINKS ===');
+        console.log('Filter links encontrados:', filterLinks.length);
+        
+        filterLinks.forEach((link, index) => {
+            console.log(`Filter link ${index}:`, link.getAttribute('data-category'));
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const categoria = link.getAttribute('data-category');
@@ -171,6 +257,7 @@
                 // Cerrar el menú móvil después de hacer clic en un enlace
                 if (navLinks && navLinks.classList.contains('show')) {
                     navLinks.classList.remove('show');
+                    console.log('Menú cerrado después de click en filtro');
                 }
                 
                 // Llamar a la función de filtrado
@@ -181,9 +268,8 @@
 
     // Función principal de carga
     window.addEventListener('DOMContentLoaded', () => {
-        console.log('DOM cargado, iniciando carga del header...');
+        console.log('🚀 DOM cargado, iniciando carga del header...');
         
-        // Cambiar la ruta del fetch también
         fetch('./header.html')
             .then(response => {
                 if (!response.ok) {
@@ -192,25 +278,48 @@
                 return response.text();
             })
             .then(data => {
-                console.log('Header cargado exitosamente');
+                console.log('📄 Header cargado exitosamente');
                 document.getElementById('header-container').innerHTML = data;
                 
                 // Esperar un momento para que el DOM se actualice
                 setTimeout(() => {
                     setupMobileMenu();
                     setupFilterLinks();
+                    
+                    // PRUEBA AUTOMÁTICA EN MÓVIL
+                    if (window.innerWidth <= 768) {
+                        console.log('📱 Detectado modo móvil, realizando pruebas...');
+                        
+                        setTimeout(() => {
+                            console.log('=== PRUEBA AUTOMÁTICA ===');
+                            if (typeof window.testMenu === 'function') {
+                                window.testMenu();
+                            }
+                        }, 2000);
+                    }
+                    
                 }, 100);
             })
             .catch(error => {
-                console.error('Error cargando el header:', error);
+                console.error('❌ Error cargando el header:', error);
             });
     });
 
-    // Función de filtrado (puedes personalizarla según tus necesidades)
+    // Función de filtrado
     function filtrarPorCategoria(categoria) {
-        console.log('Filtrando por categoría:', categoria);
+        console.log('🔍 Filtrando por categoría:', categoria);
         // Aquí va tu lógica de filtrado
     }
+
+    // DETECTAR CAMBIOS DE TAMAÑO DE VENTANA
+    window.addEventListener('resize', function() {
+        console.log('🔄 Ventana redimensionada. Nuevo ancho:', window.innerWidth);
+        const navLinks = document.getElementById('navLinks');
+        if (navLinks && window.innerWidth > 768) {
+            navLinks.classList.remove('show');
+            console.log('📱➡️💻 Cambiado a desktop, menú cerrado');
+        }
+    });
     </script>
 
     <!-- Tu script principal de productos -->
