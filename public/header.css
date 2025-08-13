@@ -1,66 +1,210 @@
-/* CSS ROBUSTO PARA PRODUCCIÓN */
+/* CSS LIMPIO Y OPTIMIZADO - Actualiza tu header.css */
 
-/* Asegurar que el botón hamburguesa sea siempre clickeable */
+/* General */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif !important;
+    padding-top: 120px;
+}
+
+/* Header fijo */
+.main-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1030;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Barra superior */
+.top-bar {
+    background: #111;
+    color: #fff;
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 0.3rem 0;
+    line-height: 1.2;
+}
+
+.top-bar p {
+    margin: 0;
+}
+
+/* Navbar container */
+.navbar.container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.8rem 1rem !important;
+    position: relative !important;
+    gap: 1rem !important;
+    flex-wrap: nowrap !important;
+    max-width: none !important;
+}
+
+/* Logo */
+.logo {
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    color: #111 !important;
+    text-decoration: none !important;
+    letter-spacing: 1px !important;
+    flex: 0 0 auto !important;
+}
+
+/* Botón hamburguesa - oculto en desktop */
 .menu-toggle {
-    pointer-events: auto !important;
+    display: none !important;
+    font-size: 1.8rem !important;
     cursor: pointer !important;
+    background: none !important;
+    border: none !important;
+    color: #333 !important;
+    padding: 0.5rem !important;
+    z-index: 1001 !important;
+    pointer-events: auto !important;
     user-select: none !important;
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
     touch-action: manipulation !important;
-    -webkit-touch-callout: none !important;
-    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Menú de navegación */
+.nav-links {
+    display: flex !important;
+    list-style: none !important;
+    gap: 1.5rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-direction: row !important;
+    position: static !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    width: auto !important;
+}
+
+.nav-links li {
+    display: list-item !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.nav-links a {
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+    transition: color 0.3s !important;
+    padding: 0.5rem 1rem !important;
+    display: inline-block !important;
+}
+
+.nav-links a:hover {
+    color: #007bff !important;
+}
+
+.nav-links .highlight {
+    color: #b30817 !important;
+    font-weight: 600 !important;
+}
+
+/* Buscador */
+.search-bar {
+    display: flex !important;
+    border: 1px solid #ddd !important;
+    border-radius: 20px !important;
+    overflow: hidden !important;
+}
+
+.search-bar input {
+    border: none !important;
+    padding: 0.4rem 0.8rem !important;
+    outline: none !important;
+    width: 180px !important;
+    transition: width 0.3s !important;
+}
+
+.search-bar input:focus {
+    width: 250px !important;
+}
+
+.search-bar button {
+    background: none !important;
+    border: none !important;
+    padding: 0 0.8rem !important;
+    cursor: pointer !important;
+    color: #555 !important;
+}
+
+/* Iconos */
+.icons {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+}
+
+.icons a {
+    color: #333 !important;
+    font-size: 1.2rem !important;
+    transition: color 0.3s !important;
+    text-decoration: none !important;
+}
+
+.icons a:hover {
+    color: #007bff !important;
+}
+
+/* Badge carrito */
+.cart {
+    position: relative !important;
+}
+
+.badge {
+    position: absolute !important;
+    top: -6px !important;
+    right: -8px !important;
+    background: #e63946 !important;
+    color: white !important;
+    font-size: 0.7rem !important;
+    border-radius: 50% !important;
+    padding: 2px 5px !important;
+}
+
+/* RESPONSIVE - TABLET */
+@media (max-width: 992px) {
+    .search-bar input {
+        width: 120px !important;
+    }
+    
+    .search-bar input:focus {
+        width: 180px !important;
+    }
+    
+    .nav-links {
+        gap: 1rem !important;
+    }
 }
 
 /* RESPONSIVE - MÓVIL */
-@media screen and (max-width: 768px) {
-    /* Forzar padding del body */
+@media (max-width: 768px) {
     body {
         padding-top: 140px !important;
     }
     
-    /* Container principal */
     .navbar.container {
-        display: flex !important;
         flex-wrap: nowrap !important;
-        align-items: center !important;
-        justify-content: space-between !important;
         padding: 0.5rem 1rem !important;
         gap: 0.5rem !important;
-        position: relative !important;
     }
     
-    /* BOTÓN HAMBURGUESA - FORZAR VISIBILIDAD */
+    /* Mostrar botón hamburguesa */
     .menu-toggle {
         display: block !important;
         order: 1 !important;
         flex: 0 0 auto !important;
-        
-        /* Estilos visuales */
-        background: none !important;
-        border: none !important;
-        color: #333 !important;
-        font-size: 1.5rem !important;
-        padding: 0.5rem !important;
-        
-        /* Posicionamiento y clickeabilidad */
-        position: relative !important;
-        z-index: 10002 !important;
-        pointer-events: auto !important;
-        cursor: pointer !important;
-        
-        /* Área de click más grande */
+        padding: 0.4rem !important;
         min-width: 44px !important;
         min-height: 44px !important;
-        
-        /* Eliminar efectos táctiles */
-        -webkit-tap-highlight-color: transparent !important;
-        touch-action: manipulation !important;
-        user-select: none !important;
-        
-        /* Hover effect */
-        transition: color 0.2s ease !important;
+        z-index: 10002 !important;
     }
     
     .menu-toggle:hover {
@@ -79,7 +223,7 @@
         margin-right: 0.5rem !important;
     }
     
-    /* Buscador */
+    /* Buscador compacto */
     .search-bar {
         order: 3 !important;
         flex: 1 1 auto !important;
@@ -94,6 +238,10 @@
         font-size: 0.9rem !important;
     }
     
+    .search-bar input:focus {
+        width: 100% !important;
+    }
+    
     .search-bar button {
         padding: 0.5rem 0.8rem !important;
         font-size: 0.9rem !important;
@@ -106,69 +254,53 @@
         flex: 0 0 auto !important;
     }
     
-    /* MENÚ MÓVIL - ESTADO OCULTO */
+    /* Menú móvil - estado oculto */
     .nav-links {
-        /* Posicionamiento absoluto */
         position: absolute !important;
         top: 100% !important;
         left: 0 !important;
         right: auto !important;
-        z-index: 10000 !important;
-        order: 5 !important;
-        
-        /* Diseño visual */
         background: #1a1a1a !important;
-        border-radius: 0 0 8px 8px !important;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
-        width: 280px !important;
-        
-        /* Layout interno */
         flex-direction: column !important;
         padding: 0 !important;
-        margin: 0 !important;
         gap: 0 !important;
+        border-radius: 0 0 8px 8px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        order: 5 !important;
+        width: 280px !important;
+        z-index: 10000 !important;
+        margin: 0 !important;
         list-style: none !important;
         
-        /* ESTADO OCULTO - CRÍTICO */
+        /* Estado oculto */
         display: none !important;
         opacity: 0;
         visibility: hidden;
         transform: translateY(-10px);
-        
-        /* Sin transición por ahora para debugging */
-        transition: none !important;
+        transition: all 0.3s ease !important;
     }
     
-    /* ESTADO VISIBLE - MUY IMPORTANTE */
+    /* Estado visible del menú */
     .nav-links.show {
         display: flex !important;
         opacity: 1 !important;
         visibility: visible !important;
         transform: translateY(0) !important;
-        
-        /* Debugging temporal */
-        border: 2px solid lime !important;
     }
     
-    /* Forzar visibilidad con especificidad máxima */
-    ul.nav-links.show {
-        display: flex !important;
-    }
-    
+    /* Máxima especificidad para el estado visible */
+    ul.nav-links.show,
     #navLinks.show {
         display: flex !important;
+        flex-direction: column !important;
     }
     
-    [id="navLinks"].show {
-        display: flex !important;
-    }
-    
-    /* Enlaces del menú */
+    /* Enlaces del menú móvil */
     .nav-links li {
         display: block !important;
-        width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
+        width: 100% !important;
         border-bottom: 1px solid #333 !important;
     }
     
@@ -177,14 +309,13 @@
     }
     
     .nav-links a {
-        display: block !important;
-        width: 100% !important;
         color: white !important;
         padding: 1rem 1.5rem !important;
+        display: block !important;
+        width: 100% !important;
         text-decoration: none !important;
         font-weight: 400 !important;
         transition: all 0.3s ease !important;
-        border: none !important;
     }
     
     .nav-links a:hover {
@@ -199,76 +330,78 @@
     }
 }
 
-/* Fallback para navegadores que no soporten algunas propiedades */
-@media screen and (max-width: 768px) {
-    .nav-links {
-        -webkit-transform: translateY(-10px) !important;
-        -moz-transform: translateY(-10px) !important;
-        -ms-transform: translateY(-10px) !important;
-    }
-    
-    .nav-links.show {
-        -webkit-transform: translateY(0) !important;
-        -moz-transform: translateY(0) !important;
-        -ms-transform: translateY(0) !important;
-    }
-}
-
-/* CSS específico para debugging en producción */
-@media screen and (max-width: 768px) {
-    /* Hacer el menú visible temporalmente para debug */
-    .debug-menu .nav-links {
-        display: flex !important;
-        background: red !important;
-        color: white !important;
-    }
-    
-    /* Test de visibilidad del botón */
-    .menu-toggle::before {
-        content: '';
-        position: absolute;
-        top: -10px;
-        left: -10px;
-        right: -10px;
-        bottom: -10px;
-        background: rgba(255, 0, 0, 0.1);
-        pointer-events: none;
-        /* Remover después del debug */
-    }
-}
-
-/* Estilos para pantallas muy pequeñas */
-@media screen and (max-width: 480px) {
-    .navbar.container {
-        padding: 0.4rem 0.8rem !important;
-    }
-    
-    .menu-toggle {
-        font-size: 1.3rem !important;
-        padding: 0.4rem !important;
-    }
-    
+/* RESPONSIVE - MÓVIL MEDIANO */
+@media (max-width: 600px) {
     .logo {
         font-size: 1.1rem !important;
     }
     
+    .menu-toggle {
+        font-size: 1.3rem !important;
+        padding: 0.3rem !important;
+    }
+    
     .search-bar {
-        max-width: 140px !important;
+        min-width: 120px !important;
+        max-width: 180px !important;
+    }
+    
+    .search-bar input {
+        padding: 0.45rem 0.7rem !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .search-bar button {
+        padding: 0.45rem 0.7rem !important;
+    }
+    
+    .navbar.container {
+        padding: 0.4rem 0.8rem !important;
+        gap: 0.4rem !important;
+    }
+}
+
+/* RESPONSIVE - MÓVIL PEQUEÑO */
+@media (max-width: 480px) {
+    body {
+        padding-top: 140px !important;
+    }
+    
+    .logo {
+        font-size: 1rem !important;
+    }
+    
+    .menu-toggle {
+        font-size: 1.2rem !important;
+        padding: 0.2rem !important;
+    }
+    
+    .icons a {
+        font-size: 0.95rem !important;
+    }
+    
+    .navbar.container {
+        padding: 0.4rem 0.6rem !important;
+        gap: 0.3rem !important;
+    }
+    
+    .search-bar {
+        flex: 1 1 auto !important;
         min-width: 100px !important;
+        max-width: 140px !important;
+    }
+    
+    .search-bar input {
+        padding: 0.4rem 0.6rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .search-bar button {
+        padding: 0.4rem 0.6rem !important;
+        font-size: 0.8rem !important;
     }
     
     .nav-links {
         width: 250px !important;
     }
-}
-
-/* Asegurar que funcione en todos los navegadores */
-.nav-links.show {
-    display: -webkit-box !important;
-    display: -ms-flexbox !important;
-    display: flex !important;
-    -webkit-box-orient: vertical !important;
-    -webkit-box-direction: normal !important;
-    -ms-flex-direction: column !important;
-    flex-direction: column !important;
 }

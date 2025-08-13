@@ -122,16 +122,12 @@
 </main>
 
     <script>
-        
-        // SOLUCIÓN ROBUSTA - Reemplaza todo tu JavaScript del menú
+      // CÓDIGO LIMPIO Y OPTIMIZADO - Reemplaza tu JavaScript actual
 
-// Función para configurar el menú hamburguesa con múltiples estrategias
+// Función para configurar el menú hamburguesa
 function setupMobileMenu() {
     const menuToggle = document.getElementById('menuToggle');
     const navLinks = document.getElementById('navLinks');
-    
-    console.log('MenuToggle:', menuToggle);
-    console.log('NavLinks:', navLinks);
     
     if (!menuToggle || !navLinks) {
         console.error('Elementos del menú no encontrados, reintentando...');
@@ -139,48 +135,39 @@ function setupMobileMenu() {
         return;
     }
 
-    // Limpiar todos los event listeners previos
+    // Limpiar event listeners previos
     const newMenuToggle = menuToggle.cloneNode(true);
     menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
-    
     const finalMenuToggle = document.getElementById('menuToggle');
     
-    // Variables de estado
+    // Variable de estado del menú
     let isMenuOpen = false;
     
     // Función para abrir menú
     function openMenu() {
-        console.log('Abriendo menú...');
         isMenuOpen = true;
         navLinks.classList.add('show');
-        navLinks.style.display = 'flex'; // Forzar display
+        navLinks.style.display = 'flex';
         finalMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
         finalMenuToggle.setAttribute('aria-label', 'Cerrar menú');
         document.body.style.overflow = 'hidden';
-        console.log('Menu abierto - Classes:', navLinks.classList.toString());
-        console.log('Menu abierto - Display:', window.getComputedStyle(navLinks).display);
     }
     
     // Función para cerrar menú
     function closeMenu() {
-        console.log('Cerrando menú...');
         isMenuOpen = false;
         navLinks.classList.remove('show');
-        navLinks.style.display = ''; // Resetear display
+        navLinks.style.display = '';
         finalMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
         finalMenuToggle.setAttribute('aria-label', 'Abrir menú');
         document.body.style.overflow = '';
-        console.log('Menu cerrado - Classes:', navLinks.classList.toString());
     }
     
     // Función toggle principal
     function toggleMenu(e) {
-        console.log('Menu toggle clicked - Estado actual:', isMenuOpen);
-        
         if (e) {
             e.preventDefault();
             e.stopPropagation();
-            e.stopImmediatePropagation();
         }
         
         if (isMenuOpen) {
@@ -190,85 +177,39 @@ function setupMobileMenu() {
         }
     }
     
-    // MÚLTIPLES EVENT LISTENERS para máxima compatibilidad
-    
-    // 1. Click normal
+    // Event listeners múltiples para máxima compatibilidad
     finalMenuToggle.addEventListener('click', toggleMenu, true);
-    
-    // 2. Touch events para móviles
     finalMenuToggle.addEventListener('touchstart', function(e) {
-        console.log('Touch detected');
         e.preventDefault();
         toggleMenu(e);
     }, { passive: false });
-    
-    // 3. Mouse events como backup
-    finalMenuToggle.addEventListener('mousedown', function(e) {
-        console.log('Mouse down detected');
-        setTimeout(() => toggleMenu(e), 50);
-    });
-    
-    // 4. Fallback con timeout
-    finalMenuToggle.addEventListener('pointerdown', function(e) {
-        console.log('Pointer down detected');
-        setTimeout(() => toggleMenu(e), 50);
-    });
     
     // Asegurar que el botón sea clickeable
     finalMenuToggle.style.pointerEvents = 'auto';
     finalMenuToggle.style.cursor = 'pointer';
     finalMenuToggle.style.zIndex = '10002';
     finalMenuToggle.style.position = 'relative';
-    finalMenuToggle.style.userSelect = 'none';
+    
+    // Forzar display en móvil
+    if (window.innerWidth <= 768) {
+        finalMenuToggle.style.display = 'block';
+    }
     
     // Cerrar menú al hacer clic fuera
     document.addEventListener('click', function(e) {
         if (isMenuOpen && !finalMenuToggle.contains(e.target) && !navLinks.contains(e.target)) {
-            console.log('Click fuera detectado, cerrando menú');
             closeMenu();
         }
     }, true);
     
-    // Cerrar menú al presionar Escape
+    // Cerrar menú con tecla Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && isMenuOpen) {
-            console.log('Escape pressed, cerrando menú');
             closeMenu();
         }
     });
     
-    // Test de visibilidad del botón
-    const rect = finalMenuToggle.getBoundingClientRect();
-    const computedStyle = window.getComputedStyle(finalMenuToggle);
-    
-    console.log('Botón hamburguesa - Propiedades:');
-    console.log('- Posición:', rect);
-    console.log('- Display:', computedStyle.display);
-    console.log('- Visibility:', computedStyle.visibility);
-    console.log('- Z-index:', computedStyle.zIndex);
-    console.log('- Pointer events:', computedStyle.pointerEvents);
-    
-    // Forzar estilos críticos
-    if (window.innerWidth <= 768) {
-        finalMenuToggle.style.display = 'block';
-        console.log('Forzando display: block en móvil');
-    }
-    
-    console.log('Menu hamburguesa configurado correctamente');
-    
-    // Test manual después de 2 segundos
-    setTimeout(() => {
-        console.log('=== TEST MANUAL DEL BOTÓN ===');
-        console.log('¿Botón existe?', !!document.getElementById('menuToggle'));
-        console.log('¿Menú existe?', !!document.getElementById('navLinks'));
-        console.log('¿Es móvil?', window.innerWidth <= 768);
-        
-        const testButton = document.getElementById('menuToggle');
-        if (testButton) {
-            console.log('Simulando click manual...');
-            testButton.click();
-        }
-    }, 2000);
+    console.log('Menú hamburguesa configurado correctamente');
 }
 
 // Función para configurar los enlaces de filtro
@@ -277,22 +218,21 @@ function setupFilterLinks() {
         const filterLinks = document.querySelectorAll('.filter-link');
         const navLinks = document.getElementById('navLinks');
         
-        console.log('Configurando', filterLinks.length, 'enlaces de filtro');
-        
-        filterLinks.forEach((link, index) => {
+        filterLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const categoria = link.getAttribute('data-category');
-                console.log('Filtro clicked:', categoria);
                 
-                // Cerrar menú móvil
+                // Cerrar menú móvil al hacer clic en un enlace
                 if (navLinks && navLinks.classList.contains('show')) {
                     navLinks.classList.remove('show');
                     navLinks.style.display = '';
                     const menuToggle = document.getElementById('menuToggle');
                     if (menuToggle) {
                         menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                        menuToggle.setAttribute('aria-label', 'Abrir menú');
                     }
+                    document.body.style.overflow = '';
                 }
                 
                 // Llamar función de filtrado
@@ -304,13 +244,9 @@ function setupFilterLinks() {
     }, 300);
 }
 
-// Función principal de carga con reintentos
-let headerLoadAttempts = 0;
-const maxAttempts = 3;
-
+// Función principal de carga
 function loadHeader() {
-    headerLoadAttempts++;
-    console.log(`Intento ${headerLoadAttempts} de carga del header...`);
+    console.log('Cargando header...');
     
     fetch('./header.html')
         .then(response => {
@@ -320,17 +256,16 @@ function loadHeader() {
             return response.text();
         })
         .then(data => {
-            console.log('Header cargado exitosamente');
             document.getElementById('header-container').innerHTML = data;
             
-            // Esperar múltiples frames para asegurar renderizado
+            // Esperar renderizado completo antes de inicializar
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     setTimeout(() => {
                         setupMobileMenu();
                         setupFilterLinks();
                         
-                        // Configurar redimensionado
+                        // Manejar redimensionado de ventana
                         let resizeTimer;
                         window.addEventListener('resize', function() {
                             clearTimeout(resizeTimer);
@@ -342,6 +277,7 @@ function loadHeader() {
                                     navLinks.classList.remove('show');
                                     navLinks.style.display = '';
                                     menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                                    menuToggle.setAttribute('aria-label', 'Abrir menú');
                                     document.body.style.overflow = '';
                                 }
                             }, 250);
@@ -353,46 +289,21 @@ function loadHeader() {
         })
         .catch(error => {
             console.error('Error cargando el header:', error);
-            if (headerLoadAttempts < maxAttempts) {
-                console.log('Reintentando carga del header...');
-                setTimeout(loadHeader, 1000);
-            }
         });
 }
 
-// Inicialización con múltiples estrategias
+// Inicialización
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('DOM cargado, iniciando carga del header...');
-        loadHeader();
-    });
+    document.addEventListener('DOMContentLoaded', loadHeader);
 } else {
-    console.log('DOM ya cargado, iniciando carga inmediata del header...');
     loadHeader();
 }
 
-// Función de filtrado
+// Función de filtrado (personalizar según tus necesidades)
 function filtrarPorCategoria(categoria) {
     console.log('Filtrando por categoría:', categoria);
-    // Tu lógica de filtrado aquí
+    // Implementar tu lógica de filtrado aquí
 }
-
-// Debug global para testing
-window.debugMenu = function() {
-    const menuToggle = document.getElementById('menuToggle');
-    const navLinks = document.getElementById('navLinks');
-    
-    console.log('=== DEBUG MENU ===');
-    console.log('MenuToggle:', menuToggle);
-    console.log('NavLinks:', navLinks);
-    console.log('Window width:', window.innerWidth);
-    console.log('Menu classes:', navLinks?.classList.toString());
-    
-    if (menuToggle) {
-        console.log('Forzando click...');
-        menuToggle.click();
-    }
-};
     </script>
 
     <!-- Tu script principal de productos -->
