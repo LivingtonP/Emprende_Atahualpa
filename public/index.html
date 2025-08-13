@@ -122,89 +122,142 @@
 </main>
 
     <script>
-    // Función para configurar el menú hamburguesa
     function setupMobileMenu() {
-        const menuToggle = document.getElementById('menuToggle');
-        const navLinks = document.getElementById('navLinks');
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    
+    console.log('MenuToggle:', menuToggle);
+    console.log('NavLinks:', navLinks);
+    
+    if (menuToggle && navLinks) {
+        // Limpiar event listeners previos
+        const newMenuToggle = menuToggle.cloneNode(true);
+        menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
         
-        console.log('MenuToggle:', menuToggle);
-        console.log('NavLinks:', navLinks);
+        const finalMenuToggle = document.getElementById('menuToggle');
         
-        if (menuToggle && navLinks) {
-            // Remover listeners previos para evitar duplicados
-            menuToggle.replaceWith(menuToggle.cloneNode(true));
-            const newMenuToggle = document.getElementById('menuToggle');
+        // Función para abrir/cerrar menú
+        function toggleMenu(e) {
+            e.preventDefault();
+            e.stopPropagation();
             
-            newMenuToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Menu toggle clicked');
-                
-                navLinks.classList.toggle('show');
-                console.log('Menu classes:', navLinks.classList.toString());
-            });
+            console.log('Menu toggle clicked');
             
-            // Cerrar menú al hacer clic fuera
-            document.addEventListener('click', function(e) {
-                if (!newMenuToggle.contains(e.target) && !navLinks.contains(e.target)) {
-                    navLinks.classList.remove('show');
-                }
-            });
+            const isOpen = navLinks.classList.contains('show');
             
-            console.log('Menu hamburguesa configurado correctamente');
-        } else {
-            console.error('No se encontraron los elementos del menú');
+            if (isOpen) {
+                // Cerrar menú
+                navLinks.classList.remove('show');
+                finalMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                finalMenuToggle.setAttribute('aria-label', 'Abrir menú');
+                console.log('Menu cerrado');
+            } else {
+                // Abrir menú
+                navLinks.classList.add('show');
+                finalMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
+                finalMenuToggle.setAttribute('aria-label', 'Cerrar menú');
+                console.log('Menu abierto');
+            }
+            
+            console.log('Menu classes:', navLinks.classList.toString());
         }
-    }
-
-    // Función para configurar los enlaces de filtro
-    function setupFilterLinks() {
-        const filterLinks = document.querySelectorAll('.filter-link');
-        const navLinks = document.getElementById('navLinks');
         
-        filterLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const categoria = link.getAttribute('data-category');
-                console.log('Filtrando por categoría:', categoria);
-                
-                // Cerrar el menú móvil después de hacer clic en un enlace
-                if (navLinks && navLinks.classList.contains('show')) {
-                    navLinks.classList.remove('show');
-                }
-                
-                // Llamar a la función de filtrado
-                filtrarPorCategoria(categoria);
-            });
+        // Event listener principal
+        finalMenuToggle.addEventListener('click', toggleMenu);
+        
+        // Cerrar menú al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!finalMenuToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                navLinks.classList.remove('show');
+                finalMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                finalMenuToggle.setAttribute('aria-label', 'Abrir menú');
+            }
         });
-    }
-
-    // Función principal de carga
-    window.addEventListener('DOMContentLoaded', () => {
-        console.log('DOM cargado, iniciando carga del header...');
         
-        // Cambiar la ruta del fetch también
-        fetch('./header.html')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+        // Cerrar menú al presionar Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && navLinks.classList.contains('show')) {
+                navLinks.classList.remove('show');
+                finalMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                finalMenuToggle.setAttribute('aria-label', 'Abrir menú');
+            }
+        });
+        
+        console.log('Menu hamburguesa configurado correctamente');
+    } else {
+        console.error('No se encontraron los elementos del menú');
+        // Reintentar después de un momento
+        setTimeout(setupMobileMenu, 500);
+    }
+}
+
+// Función para configurar los enlaces de filtro
+function setupFilterLinks() {
+    const filterLinks = document.querySelectorAll('.filter-link');
+    const navLinks = document.getElementById('navLinks');
+    
+    filterLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const categoria = link.getAttribute('data-category');
+            console.log('Filtrando por categoría:', categoria);
+            
+            // Cerrar el menú móvil después de hacer clic en un enlace
+            if (navLinks && navLinks.classList.contains('show')) {
+                navLinks.classList.remove('show');
+                const menuToggle = document.getElementById('menuToggle');
+                if (menuToggle) {
+                    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                    menuToggle.setAttribute('aria-label', 'Abrir menú');
                 }
-                return response.text();
-            })
-            .then(data => {
-                console.log('Header cargado exitosamente');
-                document.getElementById('header-container').innerHTML = data;
-                
-                // Esperar un momento para que el DOM se actualice
-                setTimeout(() => {
-                    setupMobileMenu();
-                    setupFilterLinks();
-                }, 100);
-            })
-            .catch(error => {
-                console.error('Error cargando el header:', error);
-            });
+            }
+            
+            // Llamar a la función de filtrado
+            if (typeof filtrarPorCategoria === 'function') {
+                filtrarPorCategoria(categoria);
+            }
+        });
     });
+}
+
+// Función principal de carga
+window.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM cargado, iniciando carga del header...');
+    
+    fetch('./header.html')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log('Header cargado exitosamente');
+            document.getElementById('header-container').innerHTML = data;
+            
+            // IMPORTANTE: Esperar que el DOM se actualice completamente
+            setTimeout(() => {
+                setupMobileMenu();
+                setupFilterLinks();
+                
+                // Manejar redimensionado de ventana
+                window.addEventListener('resize', function() {
+                    const navLinks = document.getElementById('navLinks');
+                    const menuToggle = document.getElementById('menuToggle');
+                    
+                    if (window.innerWidth > 768 && navLinks && menuToggle) {
+                        navLinks.classList.remove('show');
+                        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                        menuToggle.setAttribute('aria-label', 'Abrir menú');
+                    }
+                });
+                
+            }, 200); // Aumentar el tiempo de espera
+        })
+        .catch(error => {
+            console.error('Error cargando el header:', error);
+        });
+});
 
     // Función de filtrado (puedes personalizarla según tus necesidades)
     function filtrarPorCategoria(categoria) {
