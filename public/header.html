@@ -1,41 +1,559 @@
-<header class="main-header">
-    <!-- Barra superior -->
-    <div class="top-bar">
-        <p>🚚 Envío gratis en pedidos superiores a $25 | No se aceptan devoluciones una vez entregado</p>
-        <p>📍 Envíos gratis dentro de la parroquia Atahualpa</p>
-    </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     
-    <!-- Barra de navegación -->
-    <nav class="navbar container">
-        <!-- Botón menú hamburguesa (visible solo en móvil) -->
-        <div class="menu-toggle" id="menuToggle">
-            <i class="fas fa-bars"></i>
+    <style>
+        /* Reset y base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding-top: 120px;
+        }
+
+        /* Header principal */
+        .main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 9999;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Barra superior */
+        .top-bar {
+            background: #111;
+            color: #fff;
+            text-align: center;
+            font-size: 0.85rem;
+            padding: 0.5rem 0;
+        }
+
+        .top-bar p {
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        /* Navbar container */
+        .navbar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Logo */
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #111;
+            text-decoration: none;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .logo:hover {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        /* Menú hamburguesa */
+        .menu-toggle {
+            display: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #333;
+            padding: 0.5rem;
+            z-index: 10001;
+        }
+
+        /* Navegación */
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links li {
+            margin: 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #333;
+            transition: color 0.3s ease;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .nav-links .highlight {
+            color: #b30817;
+            font-weight: 600;
+        }
+
+        /* Buscador */
+        .search-bar {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            overflow: hidden;
+            margin: 0 1rem;
+        }
+
+        .search-bar input {
+            border: none;
+            padding: 0.5rem 1rem;
+            outline: none;
+            width: 200px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .search-bar input:focus {
+            width: 280px;
+            transition: width 0.3s ease;
+        }
+
+        .search-bar button {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        .search-bar button:hover {
+            color: #007bff;
+        }
+
+        /* Iconos */
+        .icons {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .icons a {
+            color: #333;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .icons a:hover {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        /* Badge carrito */
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #e63946;
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 50%;
+            padding: 2px 6px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* RESPONSIVE - Tablet */
+        @media (max-width: 992px) {
+            .search-bar input {
+                width: 150px;
+            }
+            
+            .search-bar input:focus {
+                width: 200px;
+            }
+            
+            .nav-links {
+                gap: 1.5rem;
+            }
+        }
+
+        /* RESPONSIVE - Móvil */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 130px;
+            }
+
+            .navbar-container {
+                padding: 0.6rem 1rem;
+                flex-wrap: nowrap;
+            }
+
+            /* Mostrar botón hamburguesa */
+            .menu-toggle {
+                display: block;
+                order: 1;
+            }
+
+            /* Logo */
+            .logo {
+                order: 2;
+                font-size: 1.4rem;
+                margin: 0 0.5rem;
+            }
+
+            /* Buscador compacto */
+            .search-bar {
+                order: 3;
+                margin: 0;
+                flex: 1;
+                max-width: 180px;
+            }
+
+            .search-bar input {
+                width: 100%;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .search-bar input:focus {
+                width: 100%;
+            }
+
+            /* Iconos */
+            .icons {
+                order: 4;
+                gap: 1rem;
+                margin-left: 0.5rem;
+            }
+
+            /* Menú móvil */
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: auto;
+                background: #1a1a1a;
+                flex-direction: column;
+                padding: 0;
+                gap: 0;
+                border-radius: 0 0 8px 8px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                order: 5;
+                width: 280px;
+                z-index: 10000;
+                
+                /* Estado oculto por defecto */
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+                transition: all 0.3s ease;
+            }
+
+            /* Estado visible del menú */
+            .nav-links.show {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .nav-links li {
+                width: 100%;
+                border-bottom: 1px solid #333;
+            }
+
+            .nav-links li:last-child {
+                border-bottom: none;
+            }
+
+            .nav-links a {
+                color: white;
+                padding: 1rem 1.5rem;
+                display: block;
+                width: 100%;
+                border-bottom: none;
+                font-weight: 400;
+                transition: all 0.3s ease;
+            }
+
+            .nav-links a:hover {
+                background-color: #333;
+                color: #007bff;
+                padding-left: 2rem;
+            }
+
+            .nav-links .highlight {
+                color: #ff6b6b;
+            }
+        }
+
+        /* Móvil pequeño */
+        @media (max-width: 480px) {
+            .navbar-container {
+                padding: 0.5rem 0.8rem;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .search-bar {
+                max-width: 140px;
+            }
+
+            .search-bar input {
+                padding: 0.35rem 0.6rem;
+                font-size: 0.8rem;
+            }
+
+            .icons {
+                gap: 0.8rem;
+            }
+
+            .icons a {
+                font-size: 1.1rem;
+            }
+
+            .nav-links {
+                width: 250px;
+            }
+        }
+
+        /* Hero section placeholder */
+        .hero-section {
+            height: 60vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+            text-decoration: none;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .hero-content p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+
+    <title>Tienda en línea LPM - Header Mejorado</title>
+</head>
+
+<body>
+    <header class="main-header">
+        <!-- Barra superior -->
+        <div class="top-bar">
+            <p>🚚 Envío gratis en pedidos superiores a $25 | No se aceptan devoluciones una vez entregado</p>
+            <p>📍 Envíos gratis dentro de la parroquia Atahualpa</p>
         </div>
         
-        <!-- Logo -->
-        <a class="logo" href="#">ATAHUALPA</a>
-        
-        <!-- Menú -->
-        <ul class="nav-links" id="navLinks">
-            <li><a href="#inicio" class="active" id="linkInicio">Inicio</a></li>
-            <li><a href="#mujer" class="filter-link" data-category="mujer">Mujer</a></li>
-            <li><a href="#hombre" class="filter-link" data-category="hombre">Hombre</a></li>
-            <li><a href="#prendasdesegunda" class="filter-link" data-category="prendaU">Prendas de segunda</a></li>
-            <li><a href="#ofertas" class="filter-link" data-category="prendaOfertas">Ofertas</a></li>
-        </ul>
-        
-        <!-- Buscador -->
-        <form class="search-bar" role="search">
-            <input type="search" placeholder="Buscar productos..." aria-label="Buscar">
-            <button type="submit"><i class="fas fa-search"></i></button>
-        </form>
-        
-        <!-- Iconos -->
-        <div class="icons">
-            <a href="#" title="Mi cuenta"><i class="fas fa-user"></i></a>
-            <a href="#" class="cart" title="Carrito de compras">
-                <i class="fas fa-shopping-bag"></i>
-            </a>
+        <!-- Barra de navegación -->
+        <nav class="navbar-container">
+            <!-- Botón menú hamburguesa -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <!-- Logo -->
+            <a class="logo" href="#inicio">ATAHUALPA</a>
+            
+            <!-- Menú de navegación -->
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#inicio" id="linkInicio">Inicio</a></li>
+                <li><a href="#mujer" class="filter-link" data-category="mujer">Mujer</a></li>
+                <li><a href="#hombre" class="filter-link" data-category="hombre">Hombre</a></li>
+                <li><a href="#prendasdesegunda" class="filter-link" data-category="prendaU">Prendas de segunda</a></li>
+                <li><a href="#ofertas" class="filter-link" data-category="prendaOfertas" class="highlight">Ofertas</a></li>
+            </ul>
+            
+            <!-- Buscador -->
+            <form class="search-bar" role="search">
+                <input type="search" placeholder="Buscar productos..." aria-label="Buscar productos">
+                <button type="submit" aria-label="Buscar">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+            
+            <!-- Iconos -->
+            <div class="icons">
+                <a href="#" aria-label="Mi cuenta">
+                    <i class="fas fa-user"></i>
+                </a>
+                <a href="#" class="cart" aria-label="Carrito de compras">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-badge">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Contenido de prueba -->
+    <section class="hero-section" id="inicio">
+        <div class="hero-content">
+            <h1>Tu tienda en línea</h1>
+            <p>Descubre tus gustos en nuestro catálogo | ¡Bueno, bonito y barato!</p>
+            <a href="#productos" class="btn-primary">Ver productos</a>
         </div>
-    </nav>
-</header>
+    </section>
+
+    <script>
+        // Configuración del menú hamburguesa
+        function initializeMenu() {
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (!menuToggle || !navLinks) {
+                console.error('Elementos del menú no encontrados');
+                return;
+            }
+
+            // Función para toggle del menú
+            function toggleMenu(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const isOpen = navLinks.classList.contains('show');
+                
+                if (isOpen) {
+                    closeMenu();
+                } else {
+                    openMenu();
+                }
+            }
+
+            // Función para abrir menú
+            function openMenu() {
+                navLinks.classList.add('show');
+                menuToggle.innerHTML = '<i class="fas fa-times"></i>';
+                menuToggle.setAttribute('aria-label', 'Cerrar menú');
+                document.body.style.overflow = 'hidden';
+            }
+
+            // Función para cerrar menú
+            function closeMenu() {
+                navLinks.classList.remove('show');
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                menuToggle.setAttribute('aria-label', 'Abrir menú');
+                document.body.style.overflow = '';
+            }
+
+            // Event listeners
+            menuToggle.addEventListener('click', toggleMenu);
+
+            // Cerrar al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!menuToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                    closeMenu();
+                }
+            });
+
+            // Cerrar al presionar Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && navLinks.classList.contains('show')) {
+                    closeMenu();
+                }
+            });
+
+            // Cerrar menú al hacer clic en enlaces
+            const menuLinks = navLinks.querySelectorAll('a');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Si es un enlace de filtro, prevenir comportamiento por defecto
+                    if (link.classList.contains('filter-link')) {
+                        e.preventDefault();
+                        const category = link.getAttribute('data-category');
+                        console.log('Filtrar por:', category);
+                        // Aquí llamarías a tu función de filtrado
+                        // filtrarPorCategoria(category);
+                    }
+                    
+                    // Cerrar menú en móvil
+                    if (window.innerWidth <= 768) {
+                        closeMenu();
+                    }
+                });
+            });
+
+            // Manejar redimensionado de ventana
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeMenu();
+                    navLinks.classList.remove('show');
+                }
+            });
+
+            console.log('Menú hamburguesa inicializado correctamente');
+        }
+
+        // Inicializar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeMenu);
+        } else {
+            initializeMenu();
+        }
+
+        // Función placeholder para filtrado
+        function filtrarPorCategoria(categoria) {
+            console.log('Filtrando por categoría:', categoria);
+            // Implementar lógica de filtrado aquí
+        }
+    </script>
+</body>
+</html>

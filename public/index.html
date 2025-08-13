@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
     <title>Tienda en linea LPM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 
@@ -18,51 +20,201 @@
     <div id="header-container"></div>
 
     <!-- HERO SECTION -->
-    <section class="hero-section" id="inicio">
-        <img src="./src/img/fondo.png" alt="Fondo portada" class="hero-image" />
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <h1 class="hero-title">Tu tienda en línea</h1>
-            <p class="hero-subtitle">Descubre tus gustos en nuestro catálogo | ¡Bueno, bonito y barato!</p>
-            <a href="#productos" class="btn-primary">Ver ropa</a>
-        </div>
-    </section>
+<section class="hero-section" id="inicio">
+    <img src="./src/img/fondo.png" alt="Fondo portada" class="hero-image" />
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">Tu tienda en línea</h1>
+        <p class="hero-subtitle">Descubre tus gustos en nuestro catálogo | ¡Bueno, bonito y barato!</p>
+        <a href="#productos" class="btn-primary">Ver ropa</a>
+    </div>
+</section>
 
-    <!-- FILTER BAR NUEVO -->
-    <section class="filter-bar">
-        <div class="filter-group">
-            <p class="filter-title">Filtros</p>
-            <div class="filters-container">
-                <!-- Tus filtros existentes aquí -->
+<!-- FILTER BAR NUEVO -->
+<section class="filter-bar">
+<div class="filter-group">
+<p class="filter-title">Filtros</p>
+<div class="filters-container">
+
+    <div class="filter-dropdown" data-filter="category">
+    <button class="filter-btn">
+        <i class="fas fa-layer-group"></i>
+        <span class="filter-label">Categoría</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </button>
+    <ul class="filter-list">
+        <li data-value="all" class="active">Todas</li>
+        <li data-value="mujer">Mujer</li>
+        <li data-value="hombre">Hombre</li>
+        <li data-value="accesorios">Accesorios</li>
+    </ul>
+    </div>
+
+    <div class="filter-dropdown" data-filter="size">
+    <button class="filter-btn">
+        <i class="fas fa-ruler"></i>
+        <span class="filter-label">Talla</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </button>
+    <ul class="filter-list">
+        <li data-value="all" class="active">Todas</li>
+        <li data-value="XS">XS</li>
+        <li data-value="S">S</li>
+        <li data-value="M">M</li>
+        <li data-value="L">L</li>
+        <li data-value="XL">XL</li>
+    </ul>
+    </div>
+
+    <div class="filter-dropdown" data-filter="price">
+    <button class="filter-btn">
+        <i class="fas fa-dollar-sign"></i>
+        <span class="filter-label">Precio</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </button>
+    <ul class="filter-list">
+        <li data-value="all" class="active">Todas</li>
+        <li data-value="0-50">$0 - $50</li>
+        <li data-value="50-100">$50 - $100</li>
+        <li data-value="100-200">$100 - $200</li>
+        <li data-value="200+">$200+</li>
+    </ul>
+    </div>
+
+    <div class="filter-dropdown" data-filter="sort">
+    <button class="filter-btn">
+        <i class="fas fa-sort"></i>
+        <span class="filter-label">Ordenar</span>
+        <i class="fas fa-chevron-down arrow"></i>
+    </button>
+    <ul class="filter-list">
+        <li data-value="featured" class="active">Destacados</li>
+        <li data-value="newest">Más nuevos</li>
+        <li data-value="price-low">Precio: Bajo a alto</li>
+        <li data-value="price-high">Precio: Alto a bajo</li>
+        <li data-value="rating">Mejor valorados</li>
+    </ul>
+    </div>
+
+</div>
+<button class="btn-clear-filters" aria-label="Limpiar filtros">
+    <i class="fas fa-times-circle"></i> Limpiar filtros
+</button>
+</div>
+</section>
+
+<!-- PRODUCTS SECTION -->
+<main>
+    <section class="products-section" id="productos">
+        <div class="section-header">
+            <h2 class="section-title">Prendas destacadas</h2>
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="grid" aria-pressed="true" aria-label="Vista en cuadrícula">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="view-btn" data-view="list" aria-pressed="false" aria-label="Vista en lista">
+                    <i class="fas fa-list"></i>
+                </button>
             </div>
-            <button class="btn-clear-filters" aria-label="Limpiar filtros">
-                <i class="fas fa-times-circle"></i> Limpiar filtros
-            </button>
         </div>
+        <div class="products-grid" id="productsGrid"></div>
     </section>
+</main>
 
-    <!-- PRODUCTS SECTION -->
-    <main>
-        <section class="products-section" id="productos">
-            <div class="section-header">
-                <h2 class="section-title">Prendas destacadas</h2>
-                <div class="view-toggle">
-                    <button class="view-btn active" data-view="grid" aria-pressed="true" aria-label="Vista en cuadrícula">
-                        <i class="fas fa-th-large"></i>
-                    </button>
-                    <button class="view-btn" data-view="list" aria-pressed="false" aria-label="Vista en lista">
-                        <i class="fas fa-list"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="products-grid" id="productsGrid"></div>
-        </section>
-    </main>
+    <script>
+    // Función para configurar el menú hamburguesa
+    function setupMobileMenu() {
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        
+        console.log('MenuToggle:', menuToggle);
+        console.log('NavLinks:', navLinks);
+        
+        if (menuToggle && navLinks) {
+            // Remover listeners previos para evitar duplicados
+            menuToggle.replaceWith(menuToggle.cloneNode(true));
+            const newMenuToggle = document.getElementById('menuToggle');
+            
+            newMenuToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Menu toggle clicked');
+                
+                navLinks.classList.toggle('show');
+                console.log('Menu classes:', navLinks.classList.toString());
+            });
+            
+            // Cerrar menú al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!newMenuToggle.contains(e.target) && !navLinks.contains(e.target)) {
+                    navLinks.classList.remove('show');
+                }
+            });
+            
+            console.log('Menu hamburguesa configurado correctamente');
+        } else {
+            console.error('No se encontraron los elementos del menú');
+        }
+    }
 
-    <!-- SCRIPTS -->
-    <!-- Cargar el header primero -->
-    <script src="./header-loader.js"></script>
+    // Función para configurar los enlaces de filtro
+    function setupFilterLinks() {
+        const filterLinks = document.querySelectorAll('.filter-link');
+        const navLinks = document.getElementById('navLinks');
+        
+        filterLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const categoria = link.getAttribute('data-category');
+                console.log('Filtrando por categoría:', categoria);
+                
+                // Cerrar el menú móvil después de hacer clic en un enlace
+                if (navLinks && navLinks.classList.contains('show')) {
+                    navLinks.classList.remove('show');
+                }
+                
+                // Llamar a la función de filtrado
+                filtrarPorCategoria(categoria);
+            });
+        });
+    }
+
+    // Función principal de carga
+    window.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM cargado, iniciando carga del header...');
+        
+        // Cambiar la ruta del fetch también
+        fetch('./header.html')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log('Header cargado exitosamente');
+                document.getElementById('header-container').innerHTML = data;
+                
+                // Esperar un momento para que el DOM se actualice
+                setTimeout(() => {
+                    setupMobileMenu();
+                    setupFilterLinks();
+                }, 100);
+            })
+            .catch(error => {
+                console.error('Error cargando el header:', error);
+            });
+    });
+
+    // Función de filtrado (puedes personalizarla según tus necesidades)
+    function filtrarPorCategoria(categoria) {
+        console.log('Filtrando por categoría:', categoria);
+        // Aquí va tu lógica de filtrado
+    }
+    </script>
+
     <!-- Tu script principal de productos -->
     <script type="module" src="./main.js" defer></script>
+    
 </body>
 </html>
