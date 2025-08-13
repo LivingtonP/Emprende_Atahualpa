@@ -1,4 +1,3 @@
-<!-- header.html -->
 <header class="main-header">
     <!-- Barra superior -->
     <div class="top-bar">
@@ -10,16 +9,15 @@
     <nav class="navbar container">
         <!-- Botón menú hamburguesa (visible solo en móvil) -->
         <div class="menu-toggle" id="menuToggle">
-            ☰
+            <i class="fas fa-bars"></i>
         </div>
+        
         <!-- Logo -->
         <a class="logo" href="#">ATAHUALPA</a>
         
-        
-    
         <!-- Menú -->
         <ul class="nav-links" id="navLinks">
-            <li><a href="#inicio" id="linkInicio">Inicio</a></li>
+            <li><a href="#inicio" class="active" id="linkInicio">Inicio</a></li>
             <li><a href="#mujer" class="filter-link" data-category="mujer">Mujer</a></li>
             <li><a href="#hombre" class="filter-link" data-category="hombre">Hombre</a></li>
             <li><a href="#prendasdesegunda" class="filter-link" data-category="prendaU">Prendas de segunda</a></li>
@@ -34,8 +32,8 @@
         
         <!-- Iconos -->
         <div class="icons">
-            <a href="#"><i class="fas fa-user"></i></a>
-            <a href="#" class="cart">
+            <a href="#" title="Mi cuenta"><i class="fas fa-user"></i></a>
+            <a href="#" class="cart" title="Carrito de compras">
                 <i class="fas fa-shopping-bag"></i>
             </a>
         </div>
