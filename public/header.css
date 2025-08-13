@@ -22,9 +22,10 @@ body {
     background: #111;
     color: #fff;
     text-align: center;
-    font-size: 0.85rem;
-    padding: 0.3rem 0;
+    font-size: 0.90rem;
+    padding: 0.4rem 0;
     line-height: 1.2;
+    font-size: 12px;
 }
 
 .top-bar p {
@@ -312,7 +313,7 @@ body {
         color: white !important;
         padding: 1rem 1.5rem !important;
         display: block !important;
-        width: 100% !important;
+        width: 80% !important;
         text-decoration: none !important;
         font-weight: 400 !important;
         transition: all 0.3s ease !important;
@@ -325,7 +326,7 @@ body {
     }
     
     .nav-links .highlight {
-        color: #ff6b6b !important;
+        color: #da0404 !important;
         font-weight: 600 !important;
     }
 }
