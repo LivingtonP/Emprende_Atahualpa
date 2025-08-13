@@ -1,7 +1,7 @@
 import { productos } from './productos.js';
+import { asignarEventosAgregar } from './FuncionCarrito.js';
 
-
-// Función para renderizar productos
+// ===================== RENDERIZADO DE PRODUCTOS =====================
 export function renderProductos(listaProductos, opciones = {}) {
     const {
         mostrarDescripcion = true,
@@ -11,70 +11,57 @@ export function renderProductos(listaProductos, opciones = {}) {
     } = opciones;
 
     const contenedor = document.getElementById("productsGrid");
+    if (!contenedor) {
+        console.error('No se encontró el contenedor de productos');
+        return;
+    }
 
     contenedor.innerHTML = listaProductos.map(prod => `
         <article class="product-card" 
-        data-category="${prod.categoria}" 
-        data-size="${prod.talla}" 
-        data-price="${prod.precio}">
+            data-category="${prod.categoria}" 
+            data-size="${prod.talla}" 
+            data-price="${prod.precio}">
 
-            <!-- Imagen y badge -->
             <div class="product-card__image-wrapper">
-                <img src="${prod.imagen}" 
-                    alt="${prod.nombre}" 
-                    class="product-card__image" 
-                    loading="lazy" />
-                ${prod.descuento 
-                    ? `<span class="product-card__badge">-${prod.descuento}%</span>` 
-                    : ''}
+                <img src="${prod.imagen}" alt="${prod.nombre}" class="product-card__image" loading="lazy" />
+                ${prod.descuento ? `<span class="product-card__badge">-${prod.descuento}%</span>` : ''}
             </div>
 
-            <!-- Info -->
             <div class="product-card__content">
                 <header class="product-card__header">
                     <h3 class="product-card__title">${prod.nombre}</h3>
                     <span class="product-card__brand">${prod.marca}</span>
                 </header>
 
-                ${mostrarDescripcion 
-                    ? `<p class="product-card__description">${prod.descripcion}</p>` 
-                    : ''}
+                ${mostrarDescripcion ? `<p class="product-card__description">${prod.descripcion}</p>` : ''}
 
                 <div class="product-card__meta">
-                    ${mostrarTallas 
-                        ? `<p class="product-card__tallas"><strong>Tallas:</strong> ${prod.talla}</p>` 
-                        : ''}
-                    ${mostrarStock && prod.stock !== undefined 
-                        ? `<p class="product-card__stock"><strong>Stock:</strong> ${prod.stock}</p>` 
-                        : ''}
+                    ${mostrarTallas ? `<p class="product-card__tallas"><strong>Tallas:</strong> ${prod.talla}</p>` : ''}
+                    ${mostrarStock && prod.stock !== undefined ? `<p class="product-card__stock"><strong>Stock:</strong> ${prod.stock}</p>` : ''}
                 </div>
 
-                <!-- Precio -->
                 <div class="product-card__price">
                     <span class="product-card__price-current">$${prod.precio.toFixed(2)}</span>
-                    ${prod.precioOriginal 
-                        ? `<span class="product-card__price-old">$${prod.precioOriginal.toFixed(2)}</span>` 
-                        : ''}
+                    ${prod.precioOriginal ? `<span class="product-card__price-old">$${prod.precioOriginal.toFixed(2)}</span>` : ''}
                 </div>
 
-                <!-- Botón -->
-                ${mostrarBoton 
-                    ? `<button class="product-card__btn" aria-label="Agregar ${prod.nombre} al carrito">
-                        <i class="fas fa-shopping-bag"></i> Agregar
-                    </button>` 
-                    : ''}
+                ${mostrarBoton ? `<button class="product-card__btn" aria-label="Agregar ${prod.nombre} al carrito">
+                    <i class="fas fa-shopping-bag"></i> Agregar
+                </button>` : ''}
             </div>
         </article>
     `).join('');
+
+    // Asignar eventos a los botones recién creados
+    asignarEventosAgregar();
 }
 
-// Función para mostrar todos los productos inicialmente
+// ===================== INICIALIZACIÓN =====================
 export function inicializarFiltros() {
     renderProductos(productos);
-    // Aquí puedes agregar otros filtros si los tienes
 }
 
-// Función para asignar eventos a los links del header (que se cargan dinámicamente)
+// ===================== FILTRADO POR CATEGORÍA =====================
 export function asignarEventosHeader() {
     const filterLinks = document.querySelectorAll('.filter-link');
     filterLinks.forEach(link => {
@@ -86,93 +73,114 @@ export function asignarEventosHeader() {
     });
 }
 
-// Función para filtrar productos por categoría y renderizar
 export function filtrarPorCategoria(categoria) {
     const productosFiltrados = productos.filter(prod => prod.categoria === categoria);
     renderProductos(productosFiltrados);
 }
 
-// Función para recargar la pagina
+// ===================== EVENTOS DE NAVEGACIÓN =====================
 export function asignarEventosInicio() {
     const linkInicio = document.getElementById('linkInicio');
-    if(linkInicio) {
+    if (linkInicio) {
         linkInicio.addEventListener('click', (e) => {
             e.preventDefault();
-            // Recarga la página
-            window.location.reload();
+            renderProductos(productos); // Mostrar todos los productos en lugar de recargar
+            // Si prefieres recargar la página, usa: window.location.reload();
         });
     }
 }
 
-
-
-
-
-
+// ===================== BÚSQUEDA AVANZADA =====================
 export function inicializarBusquedaAvanzada() {
     const searchInput = document.querySelector('.search-bar input[type="search"]');
     const stockToggle = document.getElementById('stockToggle');
     const ordenSelect = document.getElementById('ordenSelect');
 
+    if (!searchInput || !stockToggle || !ordenSelect) {
+        console.error('No se encontraron algunos elementos de búsqueda');
+        return;
+    }
+
     let debounceTimer;
 
-    // Inicializamos Fuse.js para búsqueda aproximada
+    // Configurar Fuse.js para búsqueda fuzzy
     const fuse = new Fuse(productos, {
         keys: ['nombre', 'marca', 'categoria', 'talla', 'descripcion'],
-        threshold: 0.3, // permite errores leves
+        threshold: 0.3,
         includeScore: true
     });
 
     function filtrarYRenderizar() {
         const query = searchInput.value.trim().toLowerCase();
-
         let resultados = [];
 
         if (query === "") {
             resultados = [...productos];
         } else {
-            // Detectar rango de precios (ej: 10-20)
+            // Verificar si es un rango de precios (ej: 10-50)
             const rangoMatch = query.match(/^(\d+(\.\d+)?)-(\d+(\.\d+)?)$/);
             if (rangoMatch) {
                 const min = parseFloat(rangoMatch[1]);
                 const max = parseFloat(rangoMatch[3]);
                 resultados = productos.filter(prod => prod.precio >= min && prod.precio <= max);
             } else {
-                // Buscar con Fuse.js (palabras clave y aproximada)
+                // Búsqueda normal con Fuse.js
                 resultados = fuse.search(query).map(res => res.item);
             }
         }
 
-        // Filtrar solo stock si toggle activo
+        // Filtrar por stock si está activado
         if (stockToggle.checked) {
             resultados = resultados.filter(prod => prod.stock > 0);
         }
 
-        // Ordenar según selección
+        // Ordenar según la selección
         const orden = ordenSelect.value;
-        if (orden === 'precio-asc') resultados.sort((a,b) => a.precio - b.precio);
-        if (orden === 'precio-desc') resultados.sort((a,b) => b.precio - a.precio);
-        // Relevancia ya viene con Fuse.js
+        switch (orden) {
+            case 'precio-asc':
+                resultados.sort((a, b) => a.precio - b.precio);
+                break;
+            case 'precio-desc':
+                resultados.sort((a, b) => b.precio - a.precio);
+                break;
+            case 'nombre-asc':
+                resultados.sort((a, b) => a.nombre.localeCompare(b.nombre));
+                break;
+            case 'nombre-desc':
+                resultados.sort((a, b) => b.nombre.localeCompare(a.nombre));
+                break;
+        }
 
+        // Renderizar resultados
         if (resultados.length > 0) {
             renderProductosConHighlight(resultados, query);
-            guardarHistorial(query);
         } else {
             mostrarSinResultados(query);
         }
+
+        guardarHistorial(query);
     }
 
-    // Debounce input
+    // Event listeners
     searchInput.addEventListener('input', () => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(filtrarYRenderizar, 300);
     });
-
+    
     stockToggle.addEventListener('change', filtrarYRenderizar);
     ordenSelect.addEventListener('change', filtrarYRenderizar);
+
+    // Prevenir envío del formulario
+    const searchForm = document.querySelector('.search-bar');
+    if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            filtrarYRenderizar();
+        });
+    }
 }
 
-// Función para resaltar palabras clave
+// ===================== RENDERIZADO CON RESALTADO =====================
 function renderProductosConHighlight(lista, query) {
     const contenedor = document.getElementById("productsGrid");
     const palabras = query.split(/\s+/).filter(p => p);
@@ -180,8 +188,10 @@ function renderProductosConHighlight(lista, query) {
     contenedor.innerHTML = lista.map(prod => {
         let nombre = prod.nombre;
         let descripcion = prod.descripcion;
+        
+        // Resaltar palabras encontradas
         palabras.forEach(palabra => {
-            const regex = new RegExp(`(${palabra})`, 'gi');
+            const regex = new RegExp(`(${palabra.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
             nombre = nombre.replace(regex, '<mark>$1</mark>');
             descripcion = descripcion.replace(regex, '<mark>$1</mark>');
         });
@@ -213,26 +223,29 @@ function renderProductosConHighlight(lista, query) {
         </article>
         `;
     }).join('');
+
+    asignarEventosAgregar(); // Asignar eventos a los botones
 }
 
-// Guardar historial de búsqueda en localStorage
+// ===================== UTILIDADES =====================
 function guardarHistorial(query) {
     if (!query) return;
+    
     let historial = JSON.parse(localStorage.getItem('historialBusqueda')) || [];
     if (!historial.includes(query)) {
-        historial.unshift(query); // agrega al inicio
-        if (historial.length > 10) historial.pop(); // máximo 10
+        historial.unshift(query);
+        if (historial.length > 10) historial.pop();
         localStorage.setItem('historialBusqueda', JSON.stringify(historial));
     }
 }
 
-// Mostrar mensaje si no hay resultados
 function mostrarSinResultados(query) {
     const contenedor = document.getElementById("productsGrid");
     contenedor.innerHTML = `
         <div class="sin-resultados">
             <i class="fas fa-search"></i>
             <p>No se encontraron productos para: <strong>${query}</strong></p>
+            <button onclick="location.reload()" class="btn-reiniciar">Ver todos los productos</button>
         </div>
     `;
 }

@@ -7,17 +7,17 @@
         <p>🚚 Envío gratis en pedidos superiores a $25 | No se aceptan devoluciones una vez entregado</p>
         <p>📍 Envíos gratis dentro de la parroquia Atahualpa</p>
     </div>
-    
+
     <!-- Barra de navegación -->
     <nav class="navbar container">
         <!-- Botón menú hamburguesa (visible solo en móvil) -->
         <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
             <i class="fas fa-bars"></i>
         </button>
-        
+
         <!-- Logo -->
         <a class="logo" href="#inicio">ATAHUALPA</a>
-        
+
         <!-- Menú -->
         <ul class="nav-links" id="navLinks">
             <li><a href="#inicio" id="linkInicio">Inicio</a></li>
@@ -26,23 +26,22 @@
             <li><a href="#prendasdesegunda" class="filter-link" data-category="prendaU">Prendas de segunda</a></li>
             <li><a href="#ofertas" class="filter-link highlight" data-category="prendaOfertas">Ofertas</a></li>
         </ul>
-        
+
         <!-- Buscador -->
         <form class="search-bar" role="search">
             <input type="search" placeholder="Buscar productos..." aria-label="Buscar">
             <button type="submit" aria-label="Buscar">
-            <i class="fas fa-search"></i>
+                <i class="fas fa-search"></i>
             </button>
         </form>
 
-
-
-        
         <!-- Iconos -->
         <div class="icons">
             <a href="#" aria-label="Mi cuenta">
                 <i class="fas fa-user"></i>
             </a>
+
+            <!-- Ícono del carrito -->
             <a href="#" class="cart" aria-label="Carrito">
                 <i class="fas fa-shopping-bag"></i>
                 <span class="badge">0</span>
@@ -50,14 +49,15 @@
         </div>
     </nav>
 
+    <!-- Filtros de búsqueda -->
     <div class="search-filters">
-    <label>
-        <input type="checkbox" id="stockToggle"> Solo disponibles
-    </label>
-    <select id="ordenSelect">
-        <option value="relevancia">Relevancia</option>
-        <option value="precio-asc">Precio: Bajo a Alto</option>
-        <option value="precio-desc">Precio: Alto a Bajo</option>
-    </select>
-</div>
+        <label>
+            <input type="checkbox" id="stockToggle"> Solo disponibles
+        </label>
+        <select id="ordenSelect">
+            <option value="relevancia">Relevancia</option>
+            <option value="precio-asc">Precio: Bajo a Alto</option>
+            <option value="precio-desc">Precio: Alto a Bajo</option>
+        </select>
+    </div>
 </header>
