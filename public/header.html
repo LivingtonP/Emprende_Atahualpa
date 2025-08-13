@@ -31,9 +31,12 @@
         <form class="search-bar" role="search">
             <input type="search" placeholder="Buscar productos..." aria-label="Buscar">
             <button type="submit" aria-label="Buscar">
-                <i class="fas fa-search"></i>
+            <i class="fas fa-search"></i>
             </button>
         </form>
+
+
+
         
         <!-- Iconos -->
         <div class="icons">
@@ -46,4 +49,15 @@
             </a>
         </div>
     </nav>
+
+    <div class="search-filters">
+    <label>
+        <input type="checkbox" id="stockToggle"> Solo disponibles
+    </label>
+    <select id="ordenSelect">
+        <option value="relevancia">Relevancia</option>
+        <option value="precio-asc">Precio: Bajo a Alto</option>
+        <option value="precio-desc">Precio: Alto a Bajo</option>
+    </select>
+</div>
 </header>

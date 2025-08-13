@@ -1,13 +1,15 @@
-import { inicializarFiltros, asignarEventosHeader, asignarEventosInicio } from './filtros.js';
+import { inicializarFiltros, asignarEventosHeader, asignarEventosInicio, inicializarBusquedaAvanzada } from './filtros.js';
+
 
 window.addEventListener('DOMContentLoaded', () => {
     fetch('header.html')
     .then(res => res.text())
     .then(html => {
-    document.getElementById('header-container').innerHTML = html;
+        document.getElementById('header-container').innerHTML = html;
 
-    inicializarFiltros();
-    asignarEventosHeader();
-    asignarEventosInicio();
+        inicializarFiltros();
+        asignarEventosHeader();
+        asignarEventosInicio();
+        inicializarBusquedaAvanzada();// buscador ahora sí
     });
 });
