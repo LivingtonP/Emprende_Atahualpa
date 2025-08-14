@@ -12,6 +12,9 @@ import {
     mostrarModalCarrito 
 } from './FuncionCarrito.js';
 
+// Importar sistema de notificaciones
+import './notificaciones.js';
+
 window.addEventListener('DOMContentLoaded', async () => {
     try {
         console.log('🚀 Iniciando carga de la aplicación...');

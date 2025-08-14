@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="./index.css">
     <link rel="stylesheet" href="./header.css">
     <link rel="stylesheet" href="./modalCarrito.css">
+    <link rel="stylesheet" href="./notificaciones.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
@@ -45,13 +46,21 @@
     </main>
 
     <!-- Modal del carrito -->
-    <div id="modalCarrito" class="modal-carrito">
-        <div class="modal-carrito-content">
-            <span class="modal-close">&times;</span>
-            <div id="modalCarritoBody"></div>
-        </div>
+<div id="modalCarrito" class="modal-carrito">
+    <div class="modal-carrito-content">
+        <span class="modal-close">&times;</span>
+        <h2>🛒 Tu carrito</h2>
+        <div id="modalCarritoBody"></div>
     </div>
+</div>
 
+
+    <!-- Contenedor de notificaciones -->
+    <div id="notifications-container" class="notifications-container"></div>
+    
+    <!-- Resto de tu contenido... -->
+    <div id="header-container"></div>
+    <!-- ... -->
     <!-- Scripts -->
     <script type="module" src="./main.js" defer></script>
     <script type="module" src="./menu.js" defer></script>

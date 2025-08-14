@@ -1,4 +1,5 @@
 import { productos } from './productos.js';
+import { notificarError, notificarExito, notificarInfo } from './notificaciones.js';
 
 // ===================== FUNCIONES DEL CARRITO =====================
 
@@ -18,14 +19,24 @@ export function agregarAlCarrito(producto) {
     if (index > -1) {
         // Producto ya existe en el carrito
         if (carrito[index].cantidad + (producto.cantidad || 1) > stockActual) {
-            alert(`No hay suficiente stock de ${producto.nombre} (Stock: ${stockActual})`);
+            notificarError(
+                `Solo quedan ${stockActual} unidades disponibles de "${producto.nombre}" en talla ${producto.talla}`,
+                'Stock insuficiente'
+            );
             return;
         }
         carrito[index].cantidad += producto.cantidad || 1;
+        notificarInfo(
+            `Se aumentó la cantidad de "${producto.nombre}" en el carrito`,
+            'Cantidad actualizada'
+        );
     } else {
         // Producto nuevo en el carrito
         if ((producto.cantidad || 1) > stockActual) {
-            alert(`No hay suficiente stock de ${producto.nombre} (Stock: ${stockActual})`);
+            notificarError(
+                `Solo quedan ${stockActual} unidades disponibles de "${producto.nombre}" en talla ${producto.talla}`,
+                'Stock insuficiente'
+            );
             return;
         }
         carrito.push({
@@ -35,11 +46,14 @@ export function agregarAlCarrito(producto) {
             cantidad: producto.cantidad || 1,
             imagen: producto.imagen
         });
+        notificarExito(
+            `"${producto.nombre}" agregado al carrito`,
+            '¡Producto agregado!'
+        );
     }
 
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarContadorCarrito();
-    mostrarModalCarrito();
 }
 
 /**
@@ -81,7 +95,7 @@ export function mostrarModalCarrito() {
             <div class="modal-carrito-footer">
                 <button id="cerrarModalBtn">Seguir comprando</button>
                 <button id="vaciarCarritoBtn">Vaciar carrito</button>
-                <button id="irAWspBtn">Enviar a WhatsApp</button>
+                <button id="irAWspBtn">Enviar compra a WhatsApp</button>
             </div>
         `;
     }
@@ -146,21 +160,38 @@ export function actualizarContadorCarrito() {
  */
 export function eliminarDelCarrito(nombre, talla) {
     let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const productoEliminado = carrito.find(item => item.nombre === nombre && item.talla === talla);
+    
     carrito = carrito.filter(item => !(item.nombre === nombre && item.talla === talla));
     
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarContadorCarrito();
     mostrarModalCarrito(); // Refrescar el modal
+    
+    if (productoEliminado) {
+        notificarInfo(
+            `"${productoEliminado.nombre}" eliminado del carrito`,
+            'Producto eliminado'
+        );
+    }
 }
 
 /**
  * Vaciar todo el carrito
  */
 export function vaciarCarrito() {
+    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    
+    if (carrito.length === 0) {
+        notificarInfo('El carrito ya está vacío');
+        return;
+    }
+    
     if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
         localStorage.removeItem('carrito');
         actualizarContadorCarrito();
-        mostrarModalCarrito(); // Refrescar el modal
+        mostrarModalCarrito();
+        notificarExito('Carrito vaciado correctamente', 'Carrito limpio');
     }
 }
 
