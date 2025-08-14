@@ -210,37 +210,128 @@ function calcularTotal(carrito) {
     return carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
 }
 
-/**
- * Enviar carrito a WhatsApp
- */
-function enviarCarritoWhatsApp() {
+
+
+async function enviarCarritoWhatsApp() {
     const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    
     if (carrito.length === 0) {
         alert('El carrito está vacío');
         return;
     }
 
-    let mensaje = '¡Hola! Me interesan estos productos:\n\n';
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // ===== LOGO =====
+    const logoUrl = './src/img/logo.png'; // Cambia al path de tu logo
+    try {
+        const logoBase64 = await getBase64FromUrl(logoUrl);
+        doc.addImage(logoBase64, 'PNG', 80, 10, 50, 20);
+    } catch (err) {
+        console.error('Error cargando logo:', err);
+    }
+
+    // ===== TÍTULO =====
+    doc.setFontSize(18);
+    doc.setTextColor(40, 40, 40);
+    doc.text('¡Gracias por tu compra!', 105, 40, { align: 'center' });
+
+    doc.setFontSize(12);
+    doc.setTextColor(80, 80, 80);
+    doc.text('Detalle de tu pedido realizado en nuestra tienda.', 105, 48, { align: 'center' });
+
+    // ===== TABLA CON IMÁGENES =====
+    const startY = 60;
+    let y = startY;
+    const imgWidth = 25;
+    const imgHeight = 25;
+    const pageHeight = 297; // A4
+    const margin = 10;
+
+    // Encabezados
+    doc.setFontSize(12);
+    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(40, 40, 40);
+    doc.rect(margin, y, 190, 10, 'F');
+    doc.setTextColor(255);
+    doc.text('Imagen', margin + 2, y + 7);
+    doc.text('Producto', margin + 30, y + 7);
+    doc.text('Talla', margin + 90, y + 7);
+    doc.text('Cant.', margin + 110, y + 7);
+    doc.text('Precio', margin + 135, y + 7);
+    doc.text('Subtotal', margin + 165, y + 7);
+    y += 12;
+
     let total = 0;
 
+    for (const item of carrito) {
+        const subtotal = item.precio * item.cantidad;
+        total += subtotal;
+
+        // Dibujar imagen
+        try {
+            const imgBase64 = await getBase64FromUrl(item.imagen);
+            doc.addImage(imgBase64, 'JPEG', margin, y, imgWidth, imgHeight);
+        } catch (err) {
+            console.error('Error cargando imagen del producto:', err);
+        }
+
+        // Texto de la fila
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.text(item.nombre, margin + 30, y + 12);
+        doc.text(item.talla, margin + 90, y + 12);
+        doc.text(item.cantidad.toString(), margin + 110, y + 12);
+        doc.text(`$${item.precio.toFixed(2)}`, margin + 135, y + 12);
+        doc.text(`$${subtotal.toFixed(2)}`, margin + 165, y + 12);
+
+        y += imgHeight + 5;
+
+        // Nueva página si se llega al final
+        if (y + imgHeight > pageHeight - margin) {
+            doc.addPage();
+            y = margin;
+        }
+    }
+
+    // ===== TOTAL =====
+    doc.setFontSize(14);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`TOTAL: $${total.toFixed(2)}`, 200, y + 10, { align: 'right' });
+
+    // ===== MENSAJE FINAL =====
+    doc.setFontSize(12);
+    doc.setTextColor(60, 60, 60);
+    doc.text('Gracias por confiar en nosotros. ¡Esperamos verte pronto!', 105, y + 30, { align: 'center' });
+
+    // ===== DESCARGAR PDF =====
+    doc.save('detalle-pedido.pdf');
+
+    // ===== MENSAJE WHATSAPP =====
+    let mensaje = '¡Hola! Me interesan estos productos:\n\n';
     carrito.forEach(item => {
         const subtotal = item.precio * item.cantidad;
-        mensaje += `• ${item.nombre}\n`;
-        mensaje += `  Talla: ${item.talla}\n`;
-        mensaje += `  Cantidad: ${item.cantidad}\n`;
-        mensaje += `  Precio: $${subtotal.toFixed(2)}\n\n`;
-        total += subtotal;
+        mensaje += `• ${item.nombre}\n  Talla: ${item.talla}\n  Cantidad: ${item.cantidad}\n  Precio: $${subtotal.toFixed(2)}\n\n`;
     });
+    mensaje += `Total: $${total.toFixed(2)}\n\nAdjunta aqui el pdf de tu compra que se acaba de descargar en tu dispositivo.\n\n¡Gracias!`;
 
-    mensaje += `Total: $${total.toFixed(2)}`;
-
-    // Reemplaza con tu número de WhatsApp
     const numeroWhatsApp = '593969251642';
     const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-    
     window.open(urlWhatsApp, '_blank');
 }
+
+// ===== Función auxiliar =====
+function getBase64FromUrl(url) {
+    return fetch(url)
+        .then(response => response.blob())
+        .then(blob => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        }));
+}
+
 
 /**
  * Obtener carrito actual
