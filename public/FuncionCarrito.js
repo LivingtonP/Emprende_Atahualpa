@@ -1,6 +1,5 @@
 import { productos } from './productos.js';
-import { notificarError, notificarExito, notificarInfo } from './notificaciones.js';
-
+import { notificarError, notificarExito, notificarInfo, mostrarModalConfirmacion } from './notificaciones.js';
 // ===================== FUNCIONES DEL CARRITO =====================
 
 /**
@@ -176,9 +175,6 @@ export function eliminarDelCarrito(nombre, talla) {
     }
 }
 
-/**
- * Vaciar todo el carrito
- */
 export function vaciarCarrito() {
     const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
     
@@ -187,13 +183,17 @@ export function vaciarCarrito() {
         return;
     }
     
-    if (confirm('¿Estás seguro de que quieres vaciar el carrito?')) {
-        localStorage.removeItem('carrito');
-        actualizarContadorCarrito();
-        mostrarModalCarrito();
-        notificarExito('Carrito vaciado correctamente', 'Carrito limpio');
-    }
+    mostrarModalConfirmacion(
+        '¿Estás seguro de que quieres vaciar el carrito?',
+        () => {
+            localStorage.removeItem('carrito');
+            actualizarContadorCarrito();
+            mostrarModalCarrito();
+            notificarExito('Carrito vaciado correctamente', 'Carrito limpio');
+        }
+    );
 }
+
 
 /**
  * Cerrar modal del carrito

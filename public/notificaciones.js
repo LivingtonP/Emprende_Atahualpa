@@ -119,3 +119,26 @@ export function cerrarTodasNotificaciones() {
         }, 300);
     });
 }
+
+export function mostrarModalConfirmacion(mensaje, onConfirm) {
+    const modal = document.getElementById('modalConfirmacion');
+    const mensajeEl = document.getElementById('modalConfirmacionMensaje');
+    const btnCancelar = document.getElementById('modalCancelarBtn');
+    const btnAceptar = document.getElementById('modalAceptarBtn');
+
+    mensajeEl.textContent = mensaje;
+    modal.style.display = 'flex';
+
+    // Limpiar eventos anteriores
+    btnAceptar.onclick = null;
+    btnCancelar.onclick = null;
+
+    btnAceptar.onclick = () => {
+        modal.style.display = 'none';
+        if (onConfirm) onConfirm();
+    };
+
+    btnCancelar.onclick = () => {
+        modal.style.display = 'none';
+    };
+}
