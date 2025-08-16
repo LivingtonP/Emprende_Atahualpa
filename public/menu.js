@@ -1,169 +1,134 @@
-// MENÚ HAMBURGUESA OPTIMIZADO - Sin conflictos de doble clic
-class MobileMenu {
-    constructor() {
-        this.isMenuOpen = false;
-        this.menuToggle = null;
-        this.navLinks = null;
-        this.isInitialized = false;
+
+      // CÓDIGO LIMPIO Y OPTIMIZADO - Reemplaza tu JavaScript actual
+
+// Función para configurar el menú hamburguesa
+function setupMobileMenu() {
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    
+    if (!menuToggle || !navLinks) {
+        console.error('Elementos del menú no encontrados, reintentando...');
+        setTimeout(setupMobileMenu, 200);
+        return;
     }
 
-    // Método para inicializar el menú
-    init() {
-        if (this.isInitialized) return;
-        
-        this.menuToggle = document.getElementById('menuToggle');
-        this.navLinks = document.getElementById('navLinks');
-        
-        if (!this.menuToggle || !this.navLinks) {
-            console.log('Elementos del menú no encontrados, reintentando...');
-            setTimeout(() => this.init(), 100);
-            return;
-        }
-
-        this.setupEventListeners();
-        this.setupStyles();
-        this.isInitialized = true;
-        console.log('Menú hamburguesa inicializado correctamente');
-    }
-
-    // Configurar estilos necesarios
-    setupStyles() {
-        this.menuToggle.style.cursor = 'pointer';
-        this.menuToggle.style.zIndex = '10002';
-        this.menuToggle.style.position = 'relative';
-        this.menuToggle.style.pointerEvents = 'auto';
-        
-        // Asegurar visibilidad en móvil
-        if (window.innerWidth <= 768) {
-            this.menuToggle.style.display = 'block';
-        }
-    }
-
-    // Configurar event listeners una sola vez
-    setupEventListeners() {
-        // Usar solo UN event listener - eliminamos conflictos
-        this.menuToggle.addEventListener('click', (e) => this.handleToggle(e));
-        
-        // Cerrar al hacer clic fuera
-        document.addEventListener('click', (e) => this.handleOutsideClick(e));
-        
-        // Cerrar con tecla Escape
-        document.addEventListener('keydown', (e) => this.handleKeyPress(e));
-        
-        // Manejar redimensionado
-        window.addEventListener('resize', () => this.handleResize());
-    }
-
-    // Manejar el toggle del menú
-    handleToggle(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        if (this.isMenuOpen) {
-            this.closeMenu();
-        } else {
-            this.openMenu();
-        }
-    }
-
-    // Abrir menú
-    openMenu() {
-        this.isMenuOpen = true;
-        this.navLinks.classList.add('show');
-        this.navLinks.style.display = 'flex';
-        this.menuToggle.innerHTML = '<i class="fas fa-times"></i>';
-        this.menuToggle.setAttribute('aria-label', 'Cerrar menú');
+    // Limpiar event listeners previos
+    const newMenuToggle = menuToggle.cloneNode(true);
+    menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
+    const finalMenuToggle = document.getElementById('menuToggle');
+    
+    // Variable de estado del menú
+    let isMenuOpen = false;
+    
+    // Función para abrir menú
+    function openMenu() {
+        isMenuOpen = true;
+        navLinks.classList.add('show');
+        navLinks.style.display = 'flex';
+        finalMenuToggle.innerHTML = '<i class="fas fa-times"></i>';
+        finalMenuToggle.setAttribute('aria-label', 'Cerrar menú');
         document.body.style.overflow = 'hidden';
     }
-
-    // Cerrar menú
-    closeMenu() {
-        this.isMenuOpen = false;
-        this.navLinks.classList.remove('show');
-        this.navLinks.style.display = '';
-        this.menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
-        this.menuToggle.setAttribute('aria-label', 'Abrir menú');
+    
+    // Función para cerrar menú
+    function closeMenu() {
+        isMenuOpen = false;
+        navLinks.classList.remove('show');
+        navLinks.style.display = '';
+        finalMenuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        finalMenuToggle.setAttribute('aria-label', 'Abrir menú');
         document.body.style.overflow = '';
     }
-
-    // Manejar clic fuera del menú
-    handleOutsideClick(e) {
-        if (this.isMenuOpen && 
-            !this.menuToggle.contains(e.target) && 
-            !this.navLinks.contains(e.target)) {
-            this.closeMenu();
-        }
-    }
-
-    // Manejar tecla Escape
-    handleKeyPress(e) {
-        if (e.key === 'Escape' && this.isMenuOpen) {
-            this.closeMenu();
-        }
-    }
-
-    // Manejar redimensionado
-    handleResize() {
-        if (window.innerWidth > 768 && this.isMenuOpen) {
-            this.closeMenu();
+    
+    // Función toggle principal
+    function toggleMenu(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
         
-        // Mostrar/ocultar botón según el tamaño de pantalla
-        if (window.innerWidth <= 768) {
-            this.menuToggle.style.display = 'block';
+        if (isMenuOpen) {
+            closeMenu();
         } else {
-            this.menuToggle.style.display = '';
+            openMenu();
         }
     }
-}
-
-// Configurar navegación y filtros
-function setupNavigationLinks() {
-    // Configurar enlace de Inicio para recargar página
-    const inicioLink = document.getElementById('linkInicio');
-    if (inicioLink) {
-        inicioLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Cerrar menú móvil si está abierto
-            if (window.mobileMenu && window.mobileMenu.isMenuOpen) {
-                window.mobileMenu.closeMenu();
-            }
-            
-            // Recargar la página
-            window.location.reload();
-        });
+    
+    // Event listeners múltiples para máxima compatibilidad
+    finalMenuToggle.addEventListener('click', toggleMenu, true);
+    finalMenuToggle.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        toggleMenu(e);
+    }, { passive: false });
+    
+    // Asegurar que el botón sea clickeable
+    finalMenuToggle.style.pointerEvents = 'auto';
+    finalMenuToggle.style.cursor = 'pointer';
+    finalMenuToggle.style.zIndex = '10002';
+    finalMenuToggle.style.position = 'relative';
+    
+    // Forzar display en móvil
+    if (window.innerWidth <= 768) {
+        finalMenuToggle.style.display = 'block';
     }
     
-    // Configurar filtros de navegación
-    const filterLinks = document.querySelectorAll('.filter-link');
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (isMenuOpen && !finalMenuToggle.contains(e.target) && !navLinks.contains(e.target)) {
+            closeMenu();
+        }
+    }, true);
     
-    filterLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            const categoria = link.getAttribute('data-category');
-            
-            // Aplicar filtro si la función existe
-            if (typeof filtrarPorCategoria === 'function') {
-                filtrarPorCategoria(categoria);
-            }
-            
-            // Scroll suave a productos
-            const productosSection = document.querySelector('#productos');
-            if (productosSection) {
-                productosSection.scrollIntoView({ behavior: 'smooth' });
-            }
-            
-            // Cerrar menú móvil si está abierto
-            if (window.mobileMenu && window.mobileMenu.isMenuOpen) {
-                window.mobileMenu.closeMenu();
-            }
-        });
+    // Cerrar menú con tecla Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isMenuOpen) {
+            closeMenu();
+        }
     });
+    
+    console.log('Menú hamburguesa configurado correctamente');
 }
 
-// Cargar header y inicializar menú
+function setupFilterLinks() {
+    setTimeout(() => {
+        const filterLinks = document.querySelectorAll('.filter-link');
+        const navLinks = document.getElementById('navLinks');
+
+        filterLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault(); // Evita que el enlace navegue inmediatamente
+
+                const categoria = link.getAttribute('data-category');
+
+                // Filtrado de productos (tu función)
+                if (typeof filtrarPorCategoria === 'function') {
+                    filtrarPorCategoria(categoria);
+                }
+
+                // Scroll suave a la sección de productos
+                const productosSection = document.querySelector('#productos');
+                if (productosSection) {
+                    productosSection.scrollIntoView({ behavior: 'smooth' });
+                }
+
+                // Cerrar menú móvil si está abierto
+                if (navLinks && navLinks.classList.contains('show')) {
+                    navLinks.classList.remove('show');
+                    navLinks.style.display = '';
+                    const menuToggle = document.getElementById('menuToggle');
+                    if (menuToggle) {
+                        menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                        menuToggle.setAttribute('aria-label', 'Abrir menú');
+                    }
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+    }, 300);
+}
+
+
+// Función principal de carga
 function loadHeader() {
     console.log('Cargando header...');
     
@@ -177,30 +142,50 @@ function loadHeader() {
         .then(data => {
             document.getElementById('header-container').innerHTML = data;
             
-            // Inicializar después de que el DOM esté listo
-            setTimeout(() => {
-                // Crear instancia global del menú
-                window.mobileMenu = new MobileMenu();
-                window.mobileMenu.init();
-                
-                // Configurar navegación
-                setupNavigationLinks();
-            }, 100);
+            // Esperar renderizado completo antes de inicializar
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        setupMobileMenu();
+                        setupFilterLinks();
+                        
+                        // Manejar redimensionado de ventana
+                        let resizeTimer;
+                        window.addEventListener('resize', function() {
+                            clearTimeout(resizeTimer);
+                            resizeTimer = setTimeout(() => {
+                                const navLinks = document.getElementById('navLinks');
+                                const menuToggle = document.getElementById('menuToggle');
+                                
+                                if (window.innerWidth > 768 && navLinks && menuToggle) {
+                                    navLinks.classList.remove('show');
+                                    navLinks.style.display = '';
+                                    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                                    menuToggle.setAttribute('aria-label', 'Abrir menú');
+                                    document.body.style.overflow = '';
+                                }
+                            }, 250);
+                        });
+                        
+                    }, 500);
+                });
+            });
         })
         .catch(error => {
             console.error('Error cargando el header:', error);
         });
 }
 
-// Inicialización principal
+// Inicialización
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadHeader);
 } else {
     loadHeader();
 }
 
-// Función de filtrado (personalizar según necesidades)
+// Función de filtrado (personalizar según tus necesidades)
 function filtrarPorCategoria(categoria) {
     console.log('Filtrando por categoría:', categoria);
-    // Tu lógica de filtrado aquí
+    // Implementar tu lógica de filtrado aquí
 }
+    
