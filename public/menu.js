@@ -1,5 +1,5 @@
-// MENÚ HAMBURGUESA DEFINITIVO - Versión que SÍ funciona
-// Compatible con tu sistema actual
+// MENÚ HAMBURGUESA ROBUSTO - VERSIÓN PRODUCCIÓN
+// Optimizado para funcionar en cualquier entorno (local, Render, etc.)
 
 class MenuHamburguesa {
     constructor() {
@@ -8,7 +8,8 @@ class MenuHamburguesa {
         this.navLinks = null;
         this.initialized = false;
         this.retryCount = 0;
-        this.maxRetries = 10;
+        this.maxRetries = 20; // Más reintentos
+        this.debugMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         
         // Bind methods
         this.handleToggle = this.handleToggle.bind(this);
@@ -16,95 +17,88 @@ class MenuHamburguesa {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.handleResize = this.handleResize.bind(this);
         this.handleLinkClick = this.handleLinkClick.bind(this);
+        
+        this.log('🚀 MenuHamburguesa iniciado');
+    }
+
+    log(...args) {
+        if (this.debugMode) {
+            console.log('[MENU]', ...args);
+        }
+    }
+
+    error(...args) {
+        console.error('[MENU ERROR]', ...args);
     }
 
     async init() {
-        console.log('🚀 Iniciando menú hamburguesa...');
+        this.log('Inicializando menú hamburguesa...');
         
         if (this.initialized) {
-            console.log('✅ Menú ya inicializado');
+            this.log('Menú ya inicializado');
             return true;
         }
 
-        // Buscar elementos
-        const found = await this.findElements();
+        // Inyectar estilos primero
+        this.injectCriticalStyles();
+
+        // Buscar elementos con múltiples estrategias
+        const found = await this.findElementsWithFallback();
         
         if (!found) {
-            console.error('❌ No se encontraron elementos del menú');
+            this.error('No se encontraron elementos del menú después de todos los intentos');
             return false;
         }
 
-        // Configurar
+        // Configurar elementos
+        this.setupElements();
         this.setupEventListeners();
-        this.setupMobileStyles();
         this.initialized = true;
         
-        console.log('✅ Menú hamburguesa listo');
-        console.log('🔧 Estado:', this.getState());
+        this.log('✅ Menú hamburguesa inicializado exitosamente');
+        this.log('Estado:', this.getState());
         
         return true;
     }
 
-    async findElements() {
-        while (this.retryCount < this.maxRetries) {
-            this.retryCount++;
-            console.log(`🔍 Buscando elementos (${this.retryCount}/${this.maxRetries})...`);
-
-            // Buscar con múltiples estrategias
-            this.menuToggle = document.getElementById('menuToggle') || 
-                             document.querySelector('.menu-toggle') ||
-                             document.querySelector('button[aria-label*="menú"]') ||
-                             document.querySelector('button[aria-label*="Menú"]');
-
-            this.navLinks = document.getElementById('navLinks') || 
-                           document.querySelector('.nav-links') ||
-                           document.querySelector('nav ul') ||
-                           document.querySelector('.navbar ul');
-
-            if (this.menuToggle && this.navLinks) {
-                console.log('✅ Elementos encontrados:', {
-                    menuToggle: this.menuToggle.className,
-                    navLinks: this.navLinks.className,
-                    menuToggleId: this.menuToggle.id,
-                    navLinksId: this.navLinks.id
-                });
-                return true;
-            }
-
-            // Esperar antes del siguiente intento
-            await new Promise(resolve => setTimeout(resolve, 200));
-        }
-
-        return false;
-    }
-
-    setupMobileStyles() {
-        // Verificar si ya existen los estilos
-        if (document.getElementById('mobileMenuStyles')) {
+    injectCriticalStyles() {
+        if (document.getElementById('menuHamburguesaStyles')) {
             return;
         }
 
         const style = document.createElement('style');
-        style.id = 'mobileMenuStyles';
+        style.id = 'menuHamburguesaStyles';
         style.textContent = `
+            /* Estilos críticos del menú hamburguesa */
+            .menu-toggle {
+                background: none !important;
+                border: none !important;
+                cursor: pointer !important;
+                z-index: 10002 !important;
+                padding: 8px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                min-width: 44px !important;
+                min-height: 44px !important;
+                font-size: 1.5rem !important;
+                color: #333 !important;
+                transition: color 0.2s ease !important;
+            }
+            
+            .menu-toggle:hover {
+                color: #007bff !important;
+            }
+            
+            @media (min-width: 769px) {
+                .menu-toggle {
+                    display: none !important;
+                }
+            }
+            
             @media (max-width: 768px) {
                 .menu-toggle {
                     display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    min-width: 44px !important;
-                    min-height: 44px !important;
-                    background: none !important;
-                    border: none !important;
-                    cursor: pointer !important;
-                    z-index: 10002 !important;
-                    font-size: 1.5rem !important;
-                    color: #333 !important;
-                    padding: 8px !important;
-                }
-                
-                .menu-toggle:hover {
-                    color: #007bff !important;
                 }
                 
                 .nav-links {
@@ -121,32 +115,29 @@ class MenuHamburguesa {
                     z-index: 10000 !important;
                     list-style: none !important;
                     
-                    /* Estado inicial - OCULTO */
+                    /* Estado oculto por defecto */
                     opacity: 0 !important;
                     visibility: hidden !important;
                     transform: translateY(-20px) !important;
                     max-height: 0 !important;
                     overflow: hidden !important;
                     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                    pointer-events: none !important;
                 }
                 
-                /* Estado VISIBLE - CRÍTICO */
-                .nav-links.show {
+                /* Estado visible - MÁXIMA ESPECIFICIDAD */
+                .nav-links.menu-show,
+                ul.nav-links.menu-show,
+                #navLinks.menu-show,
+                .navbar .nav-links.menu-show,
+                nav .nav-links.menu-show {
                     opacity: 1 !important;
                     visibility: visible !important;
                     transform: translateY(0) !important;
-                    max-height: 400px !important;
+                    max-height: 500px !important;
                     display: flex !important;
                     flex-direction: column !important;
-                }
-                
-                /* Forzar estado visible con máxima especificidad */
-                ul.nav-links.show,
-                #navLinks.show {
-                    display: flex !important;
-                    flex-direction: column !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
+                    pointer-events: auto !important;
                 }
                 
                 .nav-links li {
@@ -179,21 +170,11 @@ class MenuHamburguesa {
                     padding-left: 32px !important;
                 }
                 
-                .nav-links .highlight {
-                    color: #ff4444 !important;
-                    font-weight: 600 !important;
-                }
-                
-                .nav-links .highlight:hover {
-                    color: #ff6666 !important;
-                }
-                
-                /* Overlay cuando el menú está abierto */
-                body.menu-open {
+                body.menu-open-overlay {
                     overflow: hidden !important;
                 }
                 
-                body.menu-open::before {
+                body.menu-open-overlay::before {
                     content: '' !important;
                     position: fixed !important;
                     top: 0 !important;
@@ -201,69 +182,157 @@ class MenuHamburguesa {
                     right: 0 !important;
                     bottom: 0 !important;
                     background: rgba(0,0,0,0.5) !important;
-                    z-index: 999 !important;
+                    z-index: 9999 !important;
                     backdrop-filter: blur(2px) !important;
-                }
-            }
-            
-            @media (min-width: 769px) {
-                .menu-toggle {
-                    display: none !important;
-                }
-                
-                .nav-links {
-                    position: static !important;
-                    flex-direction: row !important;
-                    background: transparent !important;
-                    box-shadow: none !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                    transform: none !important;
-                    max-height: none !important;
-                    overflow: visible !important;
-                    display: flex !important;
                 }
             }
         `;
         
         document.head.appendChild(style);
-        console.log('✅ Estilos móviles agregados');
+        this.log('✅ Estilos críticos inyectados');
+    }
+
+    async findElementsWithFallback() {
+        const strategies = [
+            // Estrategia 1: IDs específicos
+            () => {
+                this.menuToggle = document.getElementById('menuToggle');
+                this.navLinks = document.getElementById('navLinks');
+                return this.menuToggle && this.navLinks;
+            },
+            
+            // Estrategia 2: Clases específicas
+            () => {
+                this.menuToggle = document.querySelector('.menu-toggle');
+                this.navLinks = document.querySelector('.nav-links');
+                return this.menuToggle && this.navLinks;
+            },
+            
+            // Estrategia 3: Selectores por aria-label
+            () => {
+                this.menuToggle = document.querySelector('button[aria-label*="menú"], button[aria-label*="Menú"], button[aria-label*="menu"]');
+                this.navLinks = document.querySelector('nav ul, .navbar ul');
+                return this.menuToggle && this.navLinks;
+            },
+            
+            // Estrategia 4: Buscar por contenido
+            () => {
+                const buttons = document.querySelectorAll('button');
+                for (const button of buttons) {
+                    if (button.innerHTML.includes('fa-bars') || button.innerHTML.includes('hamburger') || button.classList.contains('menu-toggle')) {
+                        this.menuToggle = button;
+                        break;
+                    }
+                }
+                this.navLinks = this.navLinks || document.querySelector('nav ul, .navigation ul');
+                return this.menuToggle && this.navLinks;
+            },
+            
+            // Estrategia 5: Crear elementos si no existen
+            () => {
+                this.log('⚠️ Intentando crear elementos faltantes...');
+                
+                const navbar = document.querySelector('.navbar, nav, header .container');
+                if (!navbar) return false;
+                
+                // Crear botón toggle si no existe
+                if (!this.menuToggle) {
+                    this.menuToggle = document.createElement('button');
+                    this.menuToggle.id = 'menuToggle';
+                    this.menuToggle.className = 'menu-toggle';
+                    this.menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                    this.menuToggle.setAttribute('aria-label', 'Abrir menú');
+                    this.menuToggle.setAttribute('aria-expanded', 'false');
+                    navbar.appendChild(this.menuToggle);
+                }
+                
+                // Buscar nav-links existente
+                this.navLinks = this.navLinks || document.querySelector('nav ul, .nav-links, ul');
+                
+                if (this.navLinks && !this.navLinks.classList.contains('nav-links')) {
+                    this.navLinks.classList.add('nav-links');
+                    this.navLinks.id = this.navLinks.id || 'navLinks';
+                }
+                
+                return this.menuToggle && this.navLinks;
+            }
+        ];
+
+        // Intentar cada estrategia con reintentos
+        while (this.retryCount < this.maxRetries) {
+            this.retryCount++;
+            this.log(`Intento ${this.retryCount}/${this.maxRetries}`);
+
+            for (let i = 0; i < strategies.length; i++) {
+                try {
+                    if (strategies[i]()) {
+                        this.log(`✅ Elementos encontrados con estrategia ${i + 1}`);
+                        this.log('MenuToggle:', this.menuToggle);
+                        this.log('NavLinks:', this.navLinks);
+                        return true;
+                    }
+                } catch (error) {
+                    this.log(`Estrategia ${i + 1} falló:`, error.message);
+                }
+            }
+
+            // Esperar antes del siguiente intento
+            await new Promise(resolve => setTimeout(resolve, 300));
+        }
+
+        return false;
+    }
+
+    setupElements() {
+        // Configurar botón toggle
+        if (this.menuToggle) {
+            this.menuToggle.className = 'menu-toggle';
+            this.menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            this.menuToggle.setAttribute('aria-label', 'Abrir menú');
+            this.menuToggle.setAttribute('aria-expanded', 'false');
+            this.menuToggle.style.display = 'flex';
+        }
+
+        // Configurar nav-links
+        if (this.navLinks) {
+            if (!this.navLinks.classList.contains('nav-links')) {
+                this.navLinks.classList.add('nav-links');
+            }
+            this.navLinks.id = this.navLinks.id || 'navLinks';
+        }
     }
 
     setupEventListeners() {
-        // Limpiar listeners anteriores
         this.removeEventListeners();
 
-        // Toggle del menú
         if (this.menuToggle) {
             this.menuToggle.addEventListener('click', this.handleToggle);
-            console.log('✅ Event listener del toggle agregado');
+            this.menuToggle.addEventListener('touchstart', this.handleToggle, { passive: true });
+            this.log('✅ Event listeners del toggle agregados');
         }
 
-        // Cerrar al hacer clic fuera
         document.addEventListener('click', this.handleOutsideClick, true);
-
-        // Cerrar con ESC
+        document.addEventListener('touchstart', this.handleOutsideClick, { passive: true });
         document.addEventListener('keydown', this.handleKeyPress);
-
-        // Manejar redimensionado
         window.addEventListener('resize', this.handleResize);
 
-        // Cerrar al hacer clic en enlaces
         if (this.navLinks) {
             const links = this.navLinks.querySelectorAll('a');
             links.forEach(link => {
                 link.addEventListener('click', this.handleLinkClick);
+                link.addEventListener('touchstart', this.handleLinkClick, { passive: true });
             });
-            console.log(`✅ Event listeners en ${links.length} enlaces`);
+            this.log(`✅ Event listeners en ${links.length} enlaces`);
         }
     }
 
     removeEventListeners() {
         if (this.menuToggle) {
             this.menuToggle.removeEventListener('click', this.handleToggle);
+            this.menuToggle.removeEventListener('touchstart', this.handleToggle);
         }
         document.removeEventListener('click', this.handleOutsideClick, true);
+        document.removeEventListener('touchstart', this.handleOutsideClick);
         document.removeEventListener('keydown', this.handleKeyPress);
         window.removeEventListener('resize', this.handleResize);
     }
@@ -272,7 +341,7 @@ class MenuHamburguesa {
         e.preventDefault();
         e.stopPropagation();
         
-        console.log('🔘 Toggle menú:', this.isMenuOpen ? 'cerrar' : 'abrir');
+        this.log('Toggle menú:', this.isMenuOpen ? 'cerrar' : 'abrir');
         
         if (this.isMenuOpen) {
             this.closeMenu();
@@ -282,62 +351,60 @@ class MenuHamburguesa {
     }
 
     openMenu() {
-        console.log('📂 Abriendo menú...');
+        this.log('Abriendo menú...');
         
         this.isMenuOpen = true;
         
-        // Agregar clase show al menú
         if (this.navLinks) {
-            this.navLinks.classList.add('show');
-            // Forzar display para asegurar visibilidad
-            this.navLinks.style.display = 'flex';
-            this.navLinks.style.flexDirection = 'column';
+            // Usar clase específica para evitar conflictos
+            this.navLinks.classList.add('menu-show');
+            
+            // Forzar display para navegadores problemáticos
+            requestAnimationFrame(() => {
+                this.navLinks.style.display = 'flex';
+                this.navLinks.style.flexDirection = 'column';
+                this.navLinks.setAttribute('data-menu-open', 'true');
+            });
         }
         
-        // Cambiar icono del botón
         if (this.menuToggle) {
             this.menuToggle.innerHTML = '<i class="fas fa-times"></i>';
             this.menuToggle.setAttribute('aria-label', 'Cerrar menú');
             this.menuToggle.setAttribute('aria-expanded', 'true');
         }
         
-        // Bloquear scroll del body
-        document.body.classList.add('menu-open');
+        document.body.classList.add('menu-open-overlay');
         
-        console.log('✅ Menú abierto');
-        console.log('🔧 Clases del menú:', this.navLinks.className);
-        console.log('🔧 Display del menú:', getComputedStyle(this.navLinks).display);
+        this.log('✅ Menú abierto');
     }
 
     closeMenu() {
-        console.log('📁 Cerrando menú...');
+        this.log('Cerrando menú...');
         
         this.isMenuOpen = false;
         
-        // Quitar clase show del menú
         if (this.navLinks) {
-            this.navLinks.classList.remove('show');
-            // En móvil, permitir que CSS maneje el display
-            if (window.innerWidth <= 768) {
-                setTimeout(() => {
-                    if (!this.isMenuOpen) {
-                        this.navLinks.style.display = '';
-                    }
-                }, 300);
-            }
+            this.navLinks.classList.remove('menu-show');
+            this.navLinks.removeAttribute('data-menu-open');
+            
+            // Limpiar estilos inline después de la animación
+            setTimeout(() => {
+                if (!this.isMenuOpen && window.innerWidth <= 768) {
+                    this.navLinks.style.display = '';
+                    this.navLinks.style.flexDirection = '';
+                }
+            }, 300);
         }
         
-        // Restaurar icono del botón
         if (this.menuToggle) {
             this.menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
             this.menuToggle.setAttribute('aria-label', 'Abrir menú');
             this.menuToggle.setAttribute('aria-expanded', 'false');
         }
         
-        // Restaurar scroll del body
-        document.body.classList.remove('menu-open');
+        document.body.classList.remove('menu-open-overlay');
         
-        console.log('✅ Menú cerrado');
+        this.log('✅ Menú cerrado');
     }
 
     handleOutsideClick(e) {
@@ -347,28 +414,28 @@ class MenuHamburguesa {
         const isClickOnToggle = this.menuToggle && this.menuToggle.contains(e.target);
         
         if (!isClickInsideMenu && !isClickOnToggle) {
-            console.log('👆 Click fuera del menú - cerrando');
+            this.log('Click fuera del menú - cerrando');
             this.closeMenu();
         }
     }
 
     handleKeyPress(e) {
         if (e.key === 'Escape' && this.isMenuOpen) {
-            console.log('⌨️ ESC presionado - cerrando menú');
+            this.log('ESC presionado - cerrando menú');
             this.closeMenu();
         }
     }
 
     handleResize() {
         if (window.innerWidth > 768 && this.isMenuOpen) {
-            console.log('📱 Pantalla grande detectada - cerrando menú');
+            this.log('Pantalla grande detectada - cerrando menú');
             this.closeMenu();
         }
     }
 
     handleLinkClick() {
         if (this.isMenuOpen) {
-            console.log('🔗 Link clickeado - cerrando menú');
+            this.log('Link clickeado - cerrando menú');
             setTimeout(() => {
                 this.closeMenu();
             }, 150);
@@ -392,7 +459,11 @@ class MenuHamburguesa {
             hasNavLinks: !!this.navLinks,
             screenWidth: window.innerWidth,
             isMobile: window.innerWidth <= 768,
-            menuClasses: this.navLinks ? this.navLinks.className : 'N/A',
+            retryCount: this.retryCount,
+            debugMode: this.debugMode,
+            menuToggleElement: this.menuToggle?.outerHTML || 'N/A',
+            navLinksElement: this.navLinks?.outerHTML?.substring(0, 100) + '...' || 'N/A',
+            menuClasses: this.navLinks?.className || 'N/A',
             menuDisplay: this.navLinks ? getComputedStyle(this.navLinks).display : 'N/A'
         };
     }
@@ -401,262 +472,324 @@ class MenuHamburguesa {
         this.removeEventListeners();
         this.closeMenu();
         
-        // Remover estilos
-        const style = document.getElementById('mobileMenuStyles');
+        const style = document.getElementById('menuHamburguesaStyles');
         if (style) {
             style.remove();
         }
         
         this.initialized = false;
-        console.log('🗑️ Menú destruido');
+        this.log('Menú destruido');
     }
 }
 
-// ==================== SISTEMA DE CARGA DE HEADER ====================
+// ==================== SISTEMA DE CARGA DE HEADER ROBUSTO ====================
 
 class HeaderLoader {
     constructor() {
         this.menuSystem = null;
         this.headerLoaded = false;
+        this.debugMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    }
+
+    log(...args) {
+        if (this.debugMode) {
+            console.log('[HEADER]', ...args);
+        }
+    }
+
+    error(...args) {
+        console.error('[HEADER ERROR]', ...args);
     }
 
     async loadHeader() {
-        console.log('📄 Cargando header...');
+        this.log('Cargando header...');
         
         try {
-            // Detectar entorno
-            const isProduction = !['localhost', '127.0.0.1'].includes(window.location.hostname);
-            const headerPath = isProduction ? '/header.html' : './header.html';
+            const headerContainer = await this.ensureHeaderContainer();
+            const headerContent = await this.fetchHeaderContent();
             
-            console.log('🌐 Entorno:', isProduction ? 'Producción' : 'Desarrollo');
-            console.log('📂 Ruta header:', headerPath);
-
-            const response = await fetch(headerPath);
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            const html = await response.text();
-            const container = document.getElementById('header-container');
-            
-            if (!container) {
-                throw new Error('Contenedor #header-container no encontrado');
-            }
-
-            container.innerHTML = html;
+            headerContainer.innerHTML = headerContent;
             this.headerLoaded = true;
-            console.log('✅ Header HTML insertado');
+            this.log('✅ Header HTML insertado');
 
-            // Esperar actualización del DOM
-            await new Promise(resolve => setTimeout(resolve, 100));
+            // Esperar a que el DOM se actualice
+            await this.waitForDOMUpdate();
 
             // Inicializar menú
             await this.initializeMenu();
 
-            // Configurar otros eventos
+            // Configurar eventos adicionales
             this.setupHeaderEvents();
 
-            console.log('🎉 Header completamente cargado');
+            this.log('🎉 Header completamente cargado');
             return true;
 
         } catch (error) {
-            console.error('❌ Error cargando header:', error);
-            
-            // Intentar rutas alternativas
-            const fallbackPaths = ['./header.html', '/header.html', 'header.html'];
-            
-            for (const path of fallbackPaths) {
-                try {
-                    console.log('🔄 Intentando ruta alternativa:', path);
-                    const response = await fetch(path);
-                    
-                    if (response.ok) {
-                        const html = await response.text();
-                        document.getElementById('header-container').innerHTML = html;
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                        await this.initializeMenu();
-                        this.setupHeaderEvents();
-                        console.log('✅ Header cargado con ruta alternativa:', path);
-                        return true;
-                    }
-                } catch (e) {
-                    continue;
-                }
-            }
-            
-            throw new Error('No se pudo cargar el header desde ninguna ruta');
+            this.error('Error cargando header:', error);
+            return false;
         }
     }
 
-    async initializeMenu() {
-        console.log('🔧 Inicializando menú...');
+    async ensureHeaderContainer() {
+        let container = document.getElementById('header-container');
         
-        // Destruir instancia anterior
+        if (!container) {
+            // Crear contenedor si no existe
+            container = document.createElement('div');
+            container.id = 'header-container';
+            
+            // Insertar al inicio del body
+            if (document.body.firstChild) {
+                document.body.insertBefore(container, document.body.firstChild);
+            } else {
+                document.body.appendChild(container);
+            }
+            
+            this.log('✅ Contenedor header creado');
+        }
+        
+        return container;
+    }
+
+    async fetchHeaderContent() {
+        const possiblePaths = [
+            './header.html',
+            '/header.html',
+            'header.html',
+            './src/header.html',
+            '/src/header.html',
+            './public/header.html',
+            '/public/header.html'
+        ];
+
+        let lastError = null;
+
+        for (const path of possiblePaths) {
+            try {
+                this.log(`Intentando cargar: ${path}`);
+                const response = await fetch(path);
+                
+                if (response.ok) {
+                    const content = await response.text();
+                    this.log(`✅ Header cargado desde: ${path}`);
+                    return content;
+                }
+                
+                lastError = new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+            } catch (error) {
+                lastError = error;
+                this.log(`❌ Falló ${path}:`, error.message);
+            }
+        }
+
+        // Si todas las rutas fallan, crear header básico
+        this.log('⚠️ Creando header básico de fallback');
+        return this.createFallbackHeader();
+    }
+
+    createFallbackHeader() {
+        return `
+            <header class="main-header">
+                <div class="top-bar">
+                    <p>¡Bienvenido a nuestro sitio!</p>
+                </div>
+                <nav class="navbar container">
+                    <a href="#" class="logo">LOGO</a>
+                    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <ul class="nav-links" id="navLinks">
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#productos">Productos</a></li>
+                        <li><a href="#servicios">Servicios</a></li>
+                        <li><a href="#contacto">Contacto</a></li>
+                    </ul>
+                    <div class="search-bar">
+                        <input type="search" placeholder="Buscar...">
+                        <button type="submit"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="icons">
+                        <a href="#" class="cart">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="badge">0</span>
+                        </a>
+                    </div>
+                </nav>
+            </header>
+        `;
+    }
+
+    async waitForDOMUpdate() {
+        return new Promise(resolve => {
+            if (typeof requestIdleCallback !== 'undefined') {
+                requestIdleCallback(resolve);
+            } else {
+                setTimeout(resolve, 100);
+            }
+        });
+    }
+
+    async initializeMenu() {
+        this.log('Inicializando menú...');
+        
         if (this.menuSystem) {
             this.menuSystem.destroy();
         }
 
-        // Crear nueva instancia
         this.menuSystem = new MenuHamburguesa();
         const success = await this.menuSystem.init();
 
         if (success) {
             window.menuSystem = this.menuSystem;
-            console.log('✅ Menú inicializado exitosamente');
+            this.log('✅ Menú inicializado exitosamente');
             return true;
         } else {
-            console.error('❌ Error inicializando el menú');
+            this.error('❌ Error inicializando el menú');
             return false;
         }
     }
 
     setupHeaderEvents() {
-        console.log('⚙️ Configurando eventos del header...');
+        this.log('Configurando eventos del header...');
 
-        // Configurar carrito
+        // Carrito
         const carritoIcon = document.querySelector('.cart');
         if (carritoIcon) {
             carritoIcon.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('🛒 Carrito clickeado');
-                
-                if (window.mostrarModalCarrito) {
+                if (typeof window.mostrarModalCarrito === 'function') {
                     window.mostrarModalCarrito();
                 } else {
-                    console.warn('⚠️ Función de carrito no disponible');
+                    this.log('Función de carrito no disponible');
                 }
             });
         }
 
-        // Configurar búsqueda
+        // Búsqueda
         const searchForm = document.querySelector('.search-bar');
         if (searchForm) {
             const searchInput = searchForm.querySelector('input[type="search"]');
             
-            // Búsqueda en tiempo real
             if (searchInput) {
                 let searchTimeout;
                 searchInput.addEventListener('input', (e) => {
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => {
                         const query = e.target.value.trim();
-                        if (query.length >= 2 && window.buscarProductos) {
+                        if (query.length >= 2 && typeof window.buscarProductos === 'function') {
                             window.buscarProductos(query);
-                        } else if (query.length === 0 && window.mostrarTodosLosProductos) {
+                        } else if (query.length === 0 && typeof window.mostrarTodosLosProductos === 'function') {
                             window.mostrarTodosLosProductos();
                         }
                     }, 300);
                 });
             }
 
-            // Búsqueda al enviar
             searchForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const query = searchInput?.value.trim();
-                if (query && window.buscarProductos) {
+                if (query && typeof window.buscarProductos === 'function') {
                     window.buscarProductos(query);
                 }
             });
         }
 
-        // Configurar filtros
-        const filterLinks = document.querySelectorAll('.filter-link');
-        filterLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                // Remover clase activa
-                filterLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-                
-                const category = link.dataset.category;
-                console.log('🏷️ Filtrando por:', category);
-                
-                if (window.filtrarPorCategoria) {
-                    window.filtrarPorCategoria(category);
-                }
-            });
-        });
-
-        // Configurar filtros adicionales
-        const stockToggle = document.getElementById('stockToggle');
-        if (stockToggle) {
-            stockToggle.addEventListener('change', (e) => {
-                if (window.filtrarPorStock) {
-                    window.filtrarPorStock(e.target.checked);
-                }
-            });
-        }
-
-        const ordenSelect = document.getElementById('ordenSelect');
-        if (ordenSelect) {
-            ordenSelect.addEventListener('change', (e) => {
-                if (window.ordenarProductos) {
-                    window.ordenarProductos(e.target.value);
-                }
-            });
-        }
-
-        console.log('✅ Eventos del header configurados');
+        this.log('✅ Eventos del header configurados');
     }
 }
 
-// ==================== INICIALIZACIÓN GLOBAL ====================
+// ==================== INICIALIZACIÓN GLOBAL ROBUSTA ====================
 
 let globalHeaderLoader = null;
+let initializationPromise = null;
 
 async function inicializarHeaderCompleto() {
-    console.log('🚀 Iniciando sistema completo...');
+    // Evitar múltiples inicializaciones simultáneas
+    if (initializationPromise) {
+        return initializationPromise;
+    }
     
-    try {
-        globalHeaderLoader = new HeaderLoader();
-        const success = await globalHeaderLoader.loadHeader();
+    initializationPromise = (async () => {
+        console.log('🚀 Iniciando sistema completo...');
         
-        if (success) {
-            console.log('🎉 Sistema completamente inicializado');
+        try {
+            // Limpiar instancia anterior
+            if (globalHeaderLoader?.menuSystem) {
+                globalHeaderLoader.menuSystem.destroy();
+            }
             
-            // Disparar evento personalizado
-            const event = new CustomEvent('headerLoaded', {
-                detail: { 
-                    menuSystem: globalHeaderLoader.menuSystem,
-                    headerLoader: globalHeaderLoader
-                }
-            });
-            document.dispatchEvent(event);
+            globalHeaderLoader = new HeaderLoader();
+            const success = await globalHeaderLoader.loadHeader();
             
-            return true;
+            if (success) {
+                console.log('🎉 Sistema completamente inicializado');
+                
+                // Disparar evento personalizado
+                const event = new CustomEvent('headerLoaded', {
+                    detail: { 
+                        menuSystem: globalHeaderLoader.menuSystem,
+                        headerLoader: globalHeaderLoader
+                    }
+                });
+                document.dispatchEvent(event);
+                
+                return true;
+            }
+            
+            return false;
+            
+        } catch (error) {
+            console.error('❌ Error en inicialización:', error);
+            return false;
+        } finally {
+            initializationPromise = null;
+        }
+    })();
+    
+    return initializationPromise;
+}
+
+// ==================== AUTO-INICIALIZACIÓN ROBUSTA ====================
+
+function setupAutoInitialization() {
+    const init = () => {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', inicializarHeaderCompleto);
+        } else {
+            inicializarHeaderCompleto();
+        }
+    };
+
+    // Múltiples puntos de entrada
+    if (typeof window !== 'undefined') {
+        if (document.readyState === 'complete') {
+            setTimeout(inicializarHeaderCompleto, 100);
+        } else {
+            init();
         }
         
-        return false;
-        
-    } catch (error) {
-        console.error('❌ Error en inicialización:', error);
-        return false;
+        // Fallback adicional
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (!globalHeaderLoader?.headerLoaded) {
+                    console.log('🔄 Fallback: Reinicializando...');
+                    inicializarHeaderCompleto();
+                }
+            }, 500);
+        });
     }
 }
 
-// Auto-inicialización
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', inicializarHeaderCompleto);
-} else {
-    inicializarHeaderCompleto();
-}
+setupAutoInitialization();
 
-// ==================== FUNCIONES GLOBALES DE DEBUG ====================
+// ==================== FUNCIONES GLOBALES DE DEBUG Y UTILIDAD ====================
 
 window.debugMenu = function() {
     if (globalHeaderLoader?.menuSystem) {
         const state = globalHeaderLoader.menuSystem.getState();
         console.log('🔍 Estado completo del menú:');
         console.table(state);
-        
-        // Info adicional de debug
-        console.log('📱 Información adicional:');
-        console.log('- Pantalla:', window.innerWidth + 'px');
-        console.log('- Es móvil:', window.innerWidth <= 768);
-        console.log('- Menú abierto:', state.isMenuOpen);
-        console.log('- Elementos encontrados:', state.hasMenuToggle && state.hasNavLinks);
-        
         return state;
     } else {
         console.log('❌ Sistema de menú no inicializado');
@@ -674,64 +807,74 @@ window.toggleMenuManual = function() {
 };
 
 window.reiniciarMenu = function() {
-    console.log('🔄 Reiniciando sistema de menú...');
-    if (globalHeaderLoader) {
-        globalHeaderLoader.initializeMenu();
-    } else {
-        inicializarHeaderCompleto();
-    }
+    console.log('🔄 Reiniciando sistema completo...');
+    inicializarHeaderCompleto();
 };
 
-window.testMenu = function() {
-    console.log('🧪 Ejecutando test del menú...');
+window.testMenuCompleto = function() {
+    console.log('🧪 Test completo del sistema...');
     
-    const menuToggle = document.getElementById('menuToggle');
-    const navLinks = document.getElementById('navLinks');
+    const tests = {
+        headerContainer: !!document.getElementById('header-container'),
+        menuToggle: !!document.getElementById('menuToggle'),
+        navLinks: !!document.getElementById('navLinks'),
+        menuSystem: !!globalHeaderLoader?.menuSystem,
+        menuInitialized: !!globalHeaderLoader?.menuSystem?.initialized,
+        screenWidth: window.innerWidth,
+        isMobile: window.innerWidth <= 768
+    };
     
-    console.log('🔍 Test de elementos:');
-    console.log('- menuToggle encontrado:', !!menuToggle);
-    console.log('- navLinks encontrado:', !!navLinks);
+    console.table(tests);
     
-    if (menuToggle && navLinks) {
-        console.log('- menuToggle ID:', menuToggle.id);
-        console.log('- menuToggle clases:', menuToggle.className);
-        console.log('- navLinks ID:', navLinks.id);
-        console.log('- navLinks clases:', navLinks.className);
-        console.log('- navLinks display:', getComputedStyle(navLinks).display);
-        console.log('- Ancho pantalla:', window.innerWidth + 'px');
-        
-        // Test de funcionalidad
-        console.log('🧪 Simulando click...');
-        menuToggle.click();
+    if (tests.menuToggle && tests.navLinks) {
+        console.log('🧪 Simulando click en toggle...');
+        document.getElementById('menuToggle').click();
         
         setTimeout(() => {
+            const navLinks = document.getElementById('navLinks');
             console.log('🔧 Estado después del click:');
-            console.log('- navLinks clases:', navLinks.className);
-            console.log('- navLinks display:', getComputedStyle(navLinks).display);
-            console.log('- navLinks opacity:', getComputedStyle(navLinks).opacity);
-            console.log('- navLinks visibility:', getComputedStyle(navLinks).visibility);
+            console.log('- Clases:', navLinks.className);
+            console.log('- Display:', getComputedStyle(navLinks).display);
+            console.log('- Opacity:', getComputedStyle(navLinks).opacity);
+            console.log('- Visibility:', getComputedStyle(navLinks).visibility);
+            console.log('- Transform:', getComputedStyle(navLinks).transform);
         }, 100);
-    } else {
-        console.error('❌ Elementos no encontrados para el test');
     }
+    
+    return tests;
 };
 
-// Exportar funciones principales
+// Exportar para uso externo
 window.inicializarHeaderCompleto = inicializarHeaderCompleto;
 window.MenuHamburguesa = MenuHamburguesa;
 window.HeaderLoader = HeaderLoader;
 
+// Log de inicio
 console.log(`
-🔧 SISTEMA DE MENÚ HAMBURGUESA - VERSIÓN FINAL
-==============================================
+🔧 SISTEMA DE MENÚ HAMBURGUESA - VERSIÓN PRODUCCIÓN ROBUSTA
+=========================================================
 ✅ Funciones disponibles:
    - debugMenu() : Ver estado completo
    - toggleMenuManual() : Toggle manual
-   - reiniciarMenu() : Reiniciar sistema  
-   - testMenu() : Test completo de funcionalidad
+   - reiniciarMenu() : Reiniciar sistema completo
+   - testMenuCompleto() : Test exhaustivo
    - window.menuSystem : Instancia del menú
    - window.globalHeaderLoader : Loader del header
 
+🚀 Características de esta versión:
+   - ✅ Múltiples estrategias de búsqueda de elementos
+   - ✅ Fallbacks para entornos de producción
+   - ✅ Creación automática de elementos faltantes
+   - ✅ Estilos críticos inyectados automáticamente
+   - ✅ Compatible con Render y otros servicios de hosting
+   - ✅ Sistema de logs diferenciado por entorno
+   - ✅ Manejo robusto de errores de red
+   - ✅ Prevención de inicializaciones múltiples
+   - ✅ Detección automática de elementos DOM
+   - ✅ Eventos táctiles para dispositivos móviles
+   - ✅ Fallback de header básico si no se encuentra archivo
+
 📱 Sistema inicializado automáticamente
-🔍 Usa testMenu() para diagnosticar problemas
+🔍 Usa testMenuCompleto() para diagnosticar problemas
+🔧 Compatible con cualquier estructura HTML existente
 `);
