@@ -1,6 +1,10 @@
-/* CSS LIMPIO Y OPTIMIZADO - Actualiza tu header.css */
+/* HEADER.CSS OPTIMIZADO - Menú hamburguesa funcional */
 
-/* General */
+/* Reset básico */
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif !important;
@@ -70,7 +74,7 @@ body {
     touch-action: manipulation !important;
 }
 
-/* Menú de navegación */
+/* Menú de navegación - Desktop */
 .nav-links {
     display: flex !important;
     list-style: none !important;
@@ -170,6 +174,33 @@ body {
     padding: 2px 5px !important;
 }
 
+/* Filtros de búsqueda */
+.search-filters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.search-filters label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.search-filters select {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 0.9rem;
+}
+
 /* RESPONSIVE - TABLET */
 @media (max-width: 992px) {
     .search-bar input {
@@ -185,10 +216,10 @@ body {
     }
 }
 
-/* RESPONSIVE - MÓVIL */
+/* ==================== RESPONSIVE - MÓVIL ==================== */
 @media (max-width: 768px) {
     body {
-        padding-top: 140px !important;
+        padding-top: 160px !important;
     }
     
     .navbar.container {
@@ -197,15 +228,18 @@ body {
         gap: 0.5rem !important;
     }
     
-    /* Mostrar botón hamburguesa */
+    /* ===== BOTÓN HAMBURGUESA ===== */
     .menu-toggle {
-        display: block !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         order: 1 !important;
         flex: 0 0 auto !important;
         padding: 0.4rem !important;
         min-width: 44px !important;
         min-height: 44px !important;
         z-index: 10002 !important;
+        font-size: 1.5rem !important;
     }
     
     .menu-toggle:hover {
@@ -216,7 +250,7 @@ body {
         transform: scale(0.95) !important;
     }
     
-    /* Logo */
+    /* ===== LOGO ===== */
     .logo {
         order: 2 !important;
         font-size: 1.2rem !important;
@@ -224,7 +258,7 @@ body {
         margin-right: 0.5rem !important;
     }
     
-    /* Buscador compacto */
+    /* ===== BUSCADOR COMPACTO ===== */
     .search-bar {
         order: 3 !important;
         flex: 1 1 auto !important;
@@ -248,14 +282,16 @@ body {
         font-size: 0.9rem !important;
     }
     
-    /* Iconos */
+    /* ===== ICONOS ===== */
     .icons {
         order: 4 !important;
         gap: 0.5rem !important;
         flex: 0 0 auto !important;
     }
     
-    /* Menú móvil - estado oculto */
+    /* ==================== MENÚ MÓVIL ==================== */
+    
+    /* Estado inicial (oculto) */
     .nav-links {
         position: absolute !important;
         top: 100% !important;
@@ -264,39 +300,40 @@ body {
         background: #1a1a1a !important;
         flex-direction: column !important;
         padding: 0 !important;
+        margin: 0 !important;
         gap: 0 !important;
         border-radius: 0 0 8px 8px !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
         order: 5 !important;
         width: 280px !important;
         z-index: 10000 !important;
-        margin: 0 !important;
         list-style: none !important;
         
-        /* Estado oculto */
-        display: none !important;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(-10px);
-        transition: all 0.3s ease !important;
+        /* Animación de entrada/salida */
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transform: translateY(-20px) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
     }
     
-    /* Estado visible del menú */
-    .nav-links.show {
-        display: flex !important;
+    /* Estado visible - CRÍTICO */
+    .nav-links.show,
+    .nav-links.menu-open,
+    ul.nav-links.show,
+    ul.nav-links.menu-open,
+    #navLinks.show,
+    #navLinks.menu-open {
         opacity: 1 !important;
         visibility: visible !important;
         transform: translateY(0) !important;
-    }
-    
-    /* Máxima especificidad para el estado visible */
-    ul.nav-links.show,
-    #navLinks.show {
+        max-height: 400px !important;
         display: flex !important;
         flex-direction: column !important;
     }
     
-    /* Enlaces del menú móvil */
+    /* Items del menú móvil */
     .nav-links li {
         display: block !important;
         margin: 0 !important;
@@ -309,29 +346,60 @@ body {
         border-bottom: none !important;
     }
     
+    /* Enlaces del menú móvil */
     .nav-links a {
         color: white !important;
-        padding: 1rem 1.5rem !important;
+        padding: 16px 24px !important;
         display: block !important;
-        width: 80% !important;
+        width: 100% !important;
         text-decoration: none !important;
-        font-weight: 400 !important;
+        font-weight: 500 !important;
         transition: all 0.3s ease !important;
+        box-sizing: border-box !important;
     }
     
-    .nav-links a:hover {
+    .nav-links a:hover,
+    .nav-links a:focus {
         background-color: #333 !important;
         color: #007bff !important;
-        padding-left: 2rem !important;
+        padding-left: 32px !important;
     }
     
     .nav-links .highlight {
-        color: #da0404 !important;
+        color: #ff4444 !important;
         font-weight: 600 !important;
+    }
+    
+    .nav-links .highlight:hover {
+        color: #ff6666 !important;
+    }
+    
+    /* ===== FILTROS EN MÓVIL ===== */
+    .search-filters {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.8rem 1rem;
+    }
+    
+    /* ===== OVERLAY CUANDO MENÚ ESTÁ ABIERTO ===== */
+    body.menu-open {
+        overflow: hidden !important;
+    }
+    
+    body.menu-open::before {
+        content: '' !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: rgba(0,0,0,0.5) !important;
+        z-index: 999 !important;
+        backdrop-filter: blur(2px) !important;
     }
 }
 
-/* RESPONSIVE - MÓVIL MEDIANO */
+/* ==================== MÓVIL MEDIANO ==================== */
 @media (max-width: 600px) {
     .logo {
         font-size: 1.1rem !important;
@@ -360,12 +428,16 @@ body {
         padding: 0.4rem 0.8rem !important;
         gap: 0.4rem !important;
     }
+    
+    .nav-links {
+        width: 260px !important;
+    }
 }
 
-/* RESPONSIVE - MÓVIL PEQUEÑO */
+/* ==================== MÓVIL PEQUEÑO ==================== */
 @media (max-width: 480px) {
     body {
-        padding-top: 140px !important;
+        padding-top: 150px !important;
     }
     
     .logo {
@@ -403,404 +475,56 @@ body {
     }
     
     .nav-links {
-        width: 250px !important;
+        width: 240px !important;
     }
 }
 
-
-
-
-
-
-
-
-/* === ESTILOS ADICIONALES PARA SISTEMA DE FILTROS === */
-
-/* Estado vacío cuando no hay resultados */
-.empty-state {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 400px;
-    grid-column: 1 / -1; /* Ocupa todo el ancho del grid */
-    text-align: center;
-    padding: 3rem 2rem;
-}
-
-.empty-state__content {
-    max-width: 400px;
-}
-
-.empty-state__icon {
-    font-size: 4rem;
-    color: var(--color-text-muted);
-    margin-bottom: 1.5rem;
-    opacity: 0.6;
-}
-
-.empty-state__title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--color-text);
-    margin-bottom: 1rem;
-}
-
-.empty-state__text {
-    color: var(--color-text-muted);
-    margin-bottom: 2rem;
-    line-height: 1.5;
-}
-
-/* Contador de resultados */
-.results-count {
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
-    font-weight: 400;
-    margin-left: 0.5rem;
-}
-
-/* Vista lista alternativa */
-.products-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.products-list .product-card {
-    flex-direction: row;
-    max-height: 200px;
-}
-
-.products-list .product-card__image-wrapper {
-    flex: 0 0 200px;
-    aspect-ratio: 1 / 1;
-}
-
-.products-list .product-card__content {
-    flex: 1;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.products-list .product-card__description {
-    flex-grow: 0;
-    margin-bottom: 0.5rem;
-}
-
-/* Animación de carga para filtros */
-.products-grid.loading {
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-.products-grid.loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid var(--color-primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    transform: translate(-50%, -50%);
-}
-
-@keyframes spin {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-/* Destacar términos de búsqueda */
-.highlight-search {
-    background-color: yellow;
-    font-weight: bold;
-    padding: 0 2px;
-}
-
-/* Mejoras en la barra de búsqueda */
-.search-bar input:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 2px rgba(0, 119, 204, 0.2);
-}
-
-.search-bar button:hover {
-    color: var(--color-primary);
-}
-
-/* Indicador de filtros activos */
-.filter-dropdown.has-filter .filter-btn {
-    border-color: var(--color-primary);
-    background-color: rgba(0, 119, 204, 0.1);
-}
-
-.filter-dropdown.has-filter .filter-btn .filter-label {
-    color: var(--color-primary);
-    font-weight: 600;
-}
-
-/* Animaciones suaves */
-.product-card {
-    animation: fadeInScale 0.3s ease forwards;
-}
-
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
+/* ==================== PANTALLAS GRANDES ==================== */
+@media (min-width: 769px) {
+    .menu-toggle {
+        display: none !important;
     }
-    to {
-        opacity: 1;
-        transform: scale(1);
+    
+    .nav-links {
+        position: static !important;
+        flex-direction: row !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        max-height: none !important;
+        overflow: visible !important;
+        width: auto !important;
+    }
+    
+    .nav-links a {
+        color: #333 !important;
+        padding: 0.5rem 1rem !important;
+        display: inline-block !important;
+    }
+    
+    .nav-links a:hover {
+        color: #007bff !important;
+        background: transparent !important;
+        padding-left: 1rem !important;
     }
 }
 
-/* Mejorar el scroll en listas de filtros */
-.filter-list {
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-border) transparent;
-}
-
-.filter-list::-webkit-scrollbar {
-    width: 6px;
-}
-
-.filter-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.filter-list::-webkit-scrollbar-thumb {
-    background: var(--color-border);
-    border-radius: 3px;
-}
-
-.filter-list::-webkit-scrollbar-thumb:hover {
-    background: var(--color-text-muted);
-}
-
-/* Badge de cantidad de filtros activos */
-.filter-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: var(--color-primary);
-    color: white;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
-/* Mensaje de carga */
-.loading-message {
+/* ==================== DEBUG - Quitar en producción ==================== */
+.debug-menu {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
+    top: 200px;
+    right: 10px;
+    background: rgba(0,0,0,0.8);
     color: white;
-    padding: 1rem 2rem;
-    border-radius: var(--radius-md);
-    z-index: 9999;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 10001;
     display: none;
 }
 
-.loading-message.show {
+.debug-menu.show {
     display: block;
 }
-
-/* Responsive adicional */
-@media (max-width: 768px) {
-    .products-list .product-card {
-        flex-direction: column;
-        max-height: none;
-    }
-    
-    .products-list .product-card__image-wrapper {
-        flex: 0 0 auto;
-        aspect-ratio: 1 / 1.1;
-    }
-    
-    .empty-state {
-        min-height: 300px;
-        padding: 2rem 1rem;
-    }
-    
-    .empty-state__icon {
-        font-size: 3rem;
-    }
-    
-    .empty-state__title {
-        font-size: 1.3rem;
-    }
-    
-    .results-count {
-        display: block;
-        margin-left: 0;
-        margin-top: 0.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .filter-bar {
-        padding: 0.8rem 1rem;
-    }
-    
-    .filters-container {
-        flex-direction: column;
-        width: 100%;
-        gap: 0.5rem;
-    }
-    
-    .filter-dropdown {
-        min-width: auto;
-        width: 100%;
-    }
-    
-    .empty-state {
-        padding: 1.5rem 1rem;
-    }
-    
-    .empty-state__icon {
-        font-size: 2.5rem;
-    }
-}
-
-/* Animación para cambios de filtro */
-.products-grid {
-    transition: opacity 0.3s ease;
-}
-
-.products-grid.updating {
-    opacity: 0.7;
-}
-
-/* Mejorar accesibilidad */
-.filter-btn:focus,
-.view-btn:focus,
-.btn-clear-filters:focus {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-}
-
-
-
-
-
-
-
-.search-bar {
-    display: flex;
-    align-items: center;
-    max-width: 350px;
-    width: 100%;
-    background: #fff;
-    border-radius: 50px;
-    padding: 5px 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: box-shadow 0.2s ease-in-out;
-}
-
-.search-bar:focus-within {
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-}
-
-.search-bar input[type="search"] {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 8px 12px;
-    font-size: 14px;
-    border-radius: 50px;
-}
-
-.search-bar button {
-    background: #ff6b6b;
-    border: none;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.search-bar button:hover {
-    background: #ff4b4b;
-}
-
-.search-bar i {
-    font-size: 16px;
-}
-
-.sin-resultados {
-    text-align: center;
-    padding: 40px 20px;
-    color: #555;
-    font-size: 16px;
-}
-
-.sin-resultados i {
-    font-size: 40px;
-    color: #ccc;
-    margin-bottom: 10px;
-    display: block;
-}
-
-.sin-resultados strong {
-    color: #ff6b6b;
-}
-
-
-.search-filters {
-    display: flex;
-    justify-content: center; /* Centrar horizontalmente */
-    align-items: center;     /* Centrar verticalmente */
-    gap: 20px;               /* Espacio entre checkbox y select */
-    margin: 15px 0;
-    background-color: #f9f9f9; /* Fondo suave */
-    padding: 10px 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08); /* Sombra ligera */
-    flex-wrap: wrap;         /* Que se acomode en móviles */
-}
-
-.search-filters label {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    color: #333;
-    cursor: pointer;
-}
-
-.search-filters input[type="checkbox"] {
-    margin-right: 8px;
-    width: 18px;
-    height: 18px;
-    accent-color: #ff6b6b; /* Color moderno para checkbox */
-}
-
-#ordenSelect {
-    padding: 6px 10px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-#ordenSelect:hover {
-    border-color: #ff6b6b;
-    box-shadow: 0 2px 8px rgba(255,107,107,0.3);
-}
-
-
-

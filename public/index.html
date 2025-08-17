@@ -2,17 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda en línea LPM</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/34/34627.png">
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="./index.css">
     <link rel="stylesheet" href="./header.css">
     <link rel="stylesheet" href="./modalCarrito.css">
     <link rel="stylesheet" href="./notificaciones.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/34/34627.png">
-
-    <title>Tienda en línea LPM</title>
+    <link rel="stylesheet" href="./estados-carga.css">
 </head>
 <body>
     <!-- Contenedor para cargar header dinámicamente -->
@@ -43,47 +48,64 @@
                     </button>
                 </div>
             </div>
-            <div class="products-grid" id="productsGrid"></div>
+            <div class="products-grid" id="productsGrid">
+                <!-- Loading inicial -->
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Cargando productos...</p>
+                </div>
+            </div>
         </section>
     </main>
 
     <!-- Modal del carrito -->
-<div id="modalCarrito" class="modal-carrito">
-    <div class="modal-carrito-content">
-        <span class="modal-close">&times;</span>
-        <h2>🛒 Tu carrito</h2>
-        <div id="modalCarritoBody"></div>
-    </div>
-</div>
-
-<!-- Modal de Confirmación -->
-<div id="modalConfirmacion" class="modal-confirmacion">
-    <div class="modal-confirmacion-content">
-        <h3 id="modalConfirmacionTitulo">Confirmar acción</h3>
-        <p id="modalConfirmacionMensaje"></p>
-        <div class="modal-confirmacion-footer">
-            <button id="modalCancelarBtn">Cancelar</button>
-            <button id="modalAceptarBtn">Aceptar</button>
+    <div id="modalCarrito" class="modal-carrito">
+        <div class="modal-carrito-content">
+            <span class="modal-close">&times;</span>
+            <h2>🛒 Tu carrito</h2>
+            <div id="modalCarritoBody"></div>
         </div>
     </div>
-</div>
 
-
+    <!-- Modal de Confirmación -->
+    <div id="modalConfirmacion" class="modal-confirmacion">
+        <div class="modal-confirmacion-content">
+            <h3 id="modalConfirmacionTitulo">Confirmar acción</h3>
+            <p id="modalConfirmacionMensaje"></p>
+            <div class="modal-confirmacion-footer">
+                <button id="modalCancelarBtn">Cancelar</button>
+                <button id="modalAceptarBtn">Aceptar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Contenedor de notificaciones -->
     <div id="notifications-container" class="notifications-container"></div>
+
+    <!-- Firebase CDN - ORDEN CORRECTO -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics-compat.js"></script>
     
-    <!-- Resto de tu contenido... -->
-    <div id="header-container"></div>
-    <!-- ... -->
-    <!-- Scripts -->
-    <script type="module" src="./main.js" defer></script>
-    <script type="module" src="./menu.js" defer></script>
-    <script type="module" src="./carrito_mostrar.js" defer></script>
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 
-
+    <!-- Scripts principales - ORDEN CORRECTO -->
+    <!-- 1. Primero el sistema de menú (reemplaza menu.js) -->
+    <script src="./menu.js"></script>
     
+    <!-- 2. Luego los productos -->
+    <script src="./productos.js"></script>
+    <script src="./stock-manager.js"></script>
+    
+    <!-- 3. Funciones del carrito -->
+    <script src="./FuncionCarrito.js"></script>
+    <script src="./carrito_mostrar.js"></script>
+    
+    <!-- 4. Finalmente main.js -->
+    <script src="./main.js"></script>
+
 </body>
 </html>

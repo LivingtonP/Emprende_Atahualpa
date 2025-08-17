@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migrar Productos a Firebase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            display: block;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .info {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Migración de Productos a Firebase</h1>
+        
+        <button id="btnMigrar" onclick="ejecutarMigracion()">
+            Migrar Productos a Firebase
+        </button>
+        
+        <button id="btnVerificar" onclick="verificarProductos()">
+            Verificar Productos Guardados
+        </button>
+        
+        <button id="btnLimpiar" onclick="limpiarLog()">
+            Limpiar Log
+        </button>
+        
+        <div id="log" class="log"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, writeBatch, doc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+        // Tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-PmCzqUDNWhnHITRhToOw4YoDnQJGiMA",
+            authDomain: "tiendaonlineatahualpa.firebaseapp.com",
+            projectId: "tiendaonlineatahualpa",
+            storageBucket: "tiendaonlineatahualpa.firebasestorage.app",
+            messagingSenderId: "650522644099",
+            appId: "1:650522644099:web:7ec67efca49a69d60d95b6",
+            measurementId: "G-JB9KQY6W8C"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Tus productos actuales
+        const productos = [
+            {
+                nombre: "Enterizo ",
+                marca: "LUXE COLLECTION",
+                precio: 19.99,
+                precioOriginal: 25.99,
+                descuento: "5",
+                imagen: "../src/mujeres/prenda1.png",
+                categoria: "prendaOfertas",
+                talla: "M",
+                descripcion: "Enterizo color rosa , sin mangas,premiun.",
+                stock: 2
+            },
+            {
+                nombre: "Enterizo de niña",
+                marca: "Creaciones Anthonella",
+                precio: 3.49,
+                imagen: "../src/mujeres/enterizo.png",
+                categoria: "mujer",
+                talla: "s",
+                descripcion: "Enterizo color rosa, con dibujos animados ",
+                stock: 1
+            },
+            {
+                nombre: "Blusa Azul sencilla",
+                marca: "Slim fit",
+                precio: 2.99,
+                imagen: "../src/mujeres/blusa azul.jpg",
+                categoria: "mujer",
+                talla: "S",
+                descripcion: "Blusa de color azul sencilla, con magas ",
+                stock: 1
+            },
+            {
+                nombre: "Abrigo ",
+                marca: "Sport ST",
+                precio: 19.99,
+                imagen: "../src/hombres/abrigo1.png",
+                categoria: "hombre",
+                talla: "42",
+                descripcion: "Abrigo de algodón, color negro con diseños color cafe claro, contiene dos bolsillos externos",
+                stock: 1
+            },
+            {
+                nombre: "Pantaloneta",
+                marca: "Adidas replica económica",
+                precio: 2.99,
+                imagen: "../src/hombres/pantr.png",
+                categoria: "hombre",
+                talla: "38",
+                descripcion: "Pantaloneta color roja, con franjas negras",
+                stock: 1
+            }
+        ];
+
+        // Función para mostrar logs
+        function log(mensaje, tipo = 'info') {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = tipo === 'error' ? 'error' : tipo === 'success' ? 'success' : 'info';
+            logElement.innerHTML += `<span class="${className}">[${timestamp}] ${mensaje}</span>\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        // Función para ejecutar la migración
+        window.ejecutarMigracion = async function() {
+            const btnMigrar = document.getElementById('btnMigrar');
+            btnMigrar.disabled = true;
+            btnMigrar.textContent = 'Migrando...';
+
+            try {
+                log("🚀 Iniciando migración de productos a Firebase...");
+                
+                const batch = writeBatch(db);
+                let contador = 0;
+
+                productos.forEach((producto) => {
+                    const docRef = doc(collection(db, "productos"));
+                    const productoConFechas = {
+                        ...producto,
+                        fechaCreacion: new Date(),
+                        fechaActualizacion: new Date()
+                    };
+                    batch.set(docRef, productoConFechas);
+                    contador++;
+                    log(`📦 Preparando producto: ${producto.nombre}`);
+                });
+
+                await batch.commit();
+                
+                log(`✅ ¡Migración completada exitosamente!`, 'success');
+                log(`📊 Total de productos migrados: ${contador}`, 'success');
+                
+                // Verificar automáticamente después de migrar
+                setTimeout(verificarProductos, 1000);
+
+            } catch (error) {
+                log(`❌ Error durante la migración: ${error.message}`, 'error');
+                console.error("Error completo:", error);
+            } finally {
+                btnMigrar.disabled = false;
+                btnMigrar.textContent = 'Migrar Productos a Firebase';
+            }
+        };
+
+        // Función para verificar productos
+        window.verificarProductos = async function() {
+            try {
+                log("🔍 Verificando productos en Firebase...");
+                
+                const querySnapshot = await getDocs(collection(db, "productos"));
+                const productosGuardados = [];
+                
+                querySnapshot.forEach((doc) => {
+                    productosGuardados.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                log(`📋 Total de productos encontrados: ${productosGuardados.length}`, 'success');
+                
+                if (productosGuardados.length > 0) {
+                    log("📝 Lista de productos:", 'success');
+                    productosGuardados.forEach((producto, index) => {
+                        log(`   ${index + 1}. ${producto.nombre} - $${producto.precio} (Stock: ${producto.stock}) - ID: ${producto.id}`);
+                    });
+                } else {
+                    log("⚠️ No se encontraron productos. Ejecuta primero la migración.", 'error');
+                }
+
+            } catch (error) {
+                log(`❌ Error al verificar productos: ${error.message}`, 'error');
+                console.error("Error completo:", error);
+            }
+        };
+
+        // Función para limpiar el log
+        window.limpiarLog = function() {
+            document.getElementById('log').innerHTML = '';
+            log("🧹 Log limpiado");
+        };
+
+        // Log inicial
+        log("💡 Sistema listo. Haz clic en 'Migrar Productos a Firebase' para comenzar.");
+        log("⚠️ IMPORTANTE: Solo ejecuta la migración UNA vez para evitar productos duplicados.");
+    </script>
+</body>
+</html>

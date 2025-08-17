@@ -1,0 +1,122 @@
+/* Estados de carga y error */
+.loading-state, 
+.error-state, 
+.sin-resultados {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #666;
+    grid-column: 1 / -1; /* Ocupa toda la cuadrícula */
+}
+
+.loading-state {
+    min-height: 300px;
+}
+
+/* Spinner de carga */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-state p {
+    font-size: 18px;
+    color: #007bff;
+    margin: 0;
+}
+
+/* Estado de error */
+.error-state {
+    color: #dc3545;
+}
+
+.error-state i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #ffc107;
+}
+
+.error-state p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.btn-retry,
+.btn-reiniciar {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-retry:hover,
+.btn-reiniciar:hover {
+    background-color: #0056b3;
+}
+
+/* Sin resultados */
+.sin-resultados {
+    color: #6c757d;
+}
+
+.sin-resultados i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #adb5bd;
+}
+
+.sin-resultados p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* Resaltado de búsqueda */
+mark {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .loading-state, 
+    .error-state, 
+    .sin-resultados {
+        padding: 40px 15px;
+    }
+    
+    .loading-state p,
+    .error-state p,
+    .sin-resultados p {
+        font-size: 16px;
+    }
+    
+    .spinner {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .error-state i,
+    .sin-resultados i {
+        font-size: 36px;
+    }
+}

@@ -1,251 +1,254 @@
-import { productos } from './productos.js';
-import { asignarEventosAgregar } from './FuncionCarrito.js';
+// productos.js - Versión con Firebase CDN (sin módulos ES6)
 
-// ===================== RENDERIZADO DE PRODUCTOS =====================
-export function renderProductos(listaProductos, opciones = {}) {
-    const {
-        mostrarDescripcion = true,
-        mostrarStock = true,
-        mostrarTallas = true,
-        mostrarBoton = true
-    } = opciones;
+// Firebase se carga desde CDN, así que usamos la versión global
+let db = null;
+let app = null;
 
-    const contenedor = document.getElementById("productsGrid");
-    if (!contenedor) {
-        console.error('No se encontró el contenedor de productos');
-        return;
-    }
-
-    contenedor.innerHTML = listaProductos.map(prod => `
-        <article class="product-card" 
-            data-category="${prod.categoria}" 
-            data-size="${prod.talla}" 
-            data-price="${prod.precio}">
-
-            <div class="product-card__image-wrapper">
-                <img src="${prod.imagen}" alt="${prod.nombre}" class="product-card__image" loading="lazy" />
-                ${prod.descuento ? `<span class="product-card__badge">-${prod.descuento}%</span>` : ''}
-            </div>
-
-            <div class="product-card__content">
-                <header class="product-card__header">
-                    <h3 class="product-card__title">${prod.nombre}</h3>
-                    <span class="product-card__brand">${prod.marca}</span>
-                </header>
-
-                ${mostrarDescripcion ? `<p class="product-card__description">${prod.descripcion}</p>` : ''}
-
-                <div class="product-card__meta">
-                    ${mostrarTallas ? `<p class="product-card__tallas"><strong>Tallas:</strong> ${prod.talla}</p>` : ''}
-                    ${mostrarStock && prod.stock !== undefined ? `<p class="product-card__stock"><strong>Stock:</strong> ${prod.stock}</p>` : ''}
-                </div>
-
-                <div class="product-card__price">
-                    <span class="product-card__price-current">$${prod.precio.toFixed(2)}</span>
-                    ${prod.precioOriginal ? `<span class="product-card__price-old">$${prod.precioOriginal.toFixed(2)}</span>` : ''}
-                </div>
-
-                ${mostrarBoton ? `<button class="product-card__btn" aria-label="Agregar ${prod.nombre} al carrito">
-                    <i class="fas fa-shopping-bag"></i> Agregar
-                </button>` : ''}
-            </div>
-        </article>
-    `).join('');
-
-    // Asignar eventos a los botones recién creados
-    asignarEventosAgregar();
-}
-
-// ===================== INICIALIZACIÓN =====================
-export function inicializarFiltros() {
-    renderProductos(productos);
-}
-
-// ===================== FILTRADO POR CATEGORÍA =====================
-export function asignarEventosHeader() {
-    const filterLinks = document.querySelectorAll('.filter-link');
-    filterLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const categoria = link.getAttribute('data-category');
-            filtrarPorCategoria(categoria);
-        });
-    });
-}
-
-export function filtrarPorCategoria(categoria) {
-    const productosFiltrados = productos.filter(prod => prod.categoria === categoria);
-    renderProductos(productosFiltrados);
-}
-
-// ===================== EVENTOS DE NAVEGACIÓN =====================
-export function asignarEventosInicio() {
-    const linkInicio = document.getElementById('linkInicio');
-    if (linkInicio) {
-        linkInicio.addEventListener('click', (e) => {
-            e.preventDefault();
-            renderProductos(productos); // Mostrar todos los productos en lugar de recargar
-            // Si prefieres recargar la página, usa: window.location.reload();
-        });
-    }
-}
-
-// ===================== BÚSQUEDA AVANZADA =====================
-export function inicializarBusquedaAvanzada() {
-    const searchInput = document.querySelector('.search-bar input[type="search"]');
-    const stockToggle = document.getElementById('stockToggle');
-    const ordenSelect = document.getElementById('ordenSelect');
-
-    if (!searchInput || !stockToggle || !ordenSelect) {
-        console.error('No se encontraron algunos elementos de búsqueda');
-        return;
-    }
-
-    let debounceTimer;
-
-    // Configurar Fuse.js para búsqueda fuzzy
-    const fuse = new Fuse(productos, {
-        keys: ['nombre', 'marca', 'categoria', 'talla', 'descripcion'],
-        threshold: 0.3,
-        includeScore: true
-    });
-
-    function filtrarYRenderizar() {
-        const query = searchInput.value.trim().toLowerCase();
-        let resultados = [];
-
-        if (query === "") {
-            resultados = [...productos];
-        } else {
-            // Verificar si es un rango de precios (ej: 10-50)
-            const rangoMatch = query.match(/^(\d+(\.\d+)?)-(\d+(\.\d+)?)$/);
-            if (rangoMatch) {
-                const min = parseFloat(rangoMatch[1]);
-                const max = parseFloat(rangoMatch[3]);
-                resultados = productos.filter(prod => prod.precio >= min && prod.precio <= max);
-            } else {
-                // Búsqueda normal con Fuse.js
-                resultados = fuse.search(query).map(res => res.item);
-            }
-        }
-
-        // Filtrar por stock si está activado
-        if (stockToggle.checked) {
-            resultados = resultados.filter(prod => prod.stock > 0);
-        }
-
-        // Ordenar según la selección
-        const orden = ordenSelect.value;
-        switch (orden) {
-            case 'precio-asc':
-                resultados.sort((a, b) => a.precio - b.precio);
-                break;
-            case 'precio-desc':
-                resultados.sort((a, b) => b.precio - a.precio);
-                break;
-            case 'nombre-asc':
-                resultados.sort((a, b) => a.nombre.localeCompare(b.nombre));
-                break;
-            case 'nombre-desc':
-                resultados.sort((a, b) => b.nombre.localeCompare(a.nombre));
-                break;
-        }
-
-        // Renderizar resultados
-        if (resultados.length > 0) {
-            renderProductosConHighlight(resultados, query);
-        } else {
-            mostrarSinResultados(query);
-        }
-
-        guardarHistorial(query);
-    }
-
-    // Event listeners
-    searchInput.addEventListener('input', () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(filtrarYRenderizar, 300);
-    });
+// Función para inicializar Firebase
+async function inicializarFirebase() {
+    if (app) return app; // Ya está inicializado
     
-    stockToggle.addEventListener('change', filtrarYRenderizar);
-    ordenSelect.addEventListener('change', filtrarYRenderizar);
+    try {
+        // Verificar que Firebase esté disponible
+        if (typeof firebase === 'undefined') {
+            throw new Error('Firebase no está cargado. Asegúrate de incluir los scripts de Firebase en tu HTML.');
+        }
 
-    // Prevenir envío del formulario
-    const searchForm = document.querySelector('.search-bar');
-    if (searchForm) {
-        searchForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            filtrarYRenderizar();
-        });
-    }
-}
+        // Tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-PmCzqUDNWhnHITRhToOw4YoDnQJGiMA",
+            authDomain: "tiendaonlineatahualpa.firebaseapp.com",
+            projectId: "tiendaonlineatahualpa",
+            storageBucket: "tiendaonlineatahualpa.firebasestorage.app",
+            messagingSenderId: "650522644099",
+            appId: "1:650522644099:web:7ec67efca49a69d60d95b6",
+            measurementId: "G-JB9KQY6W8C"
+        };
 
-// ===================== RENDERIZADO CON RESALTADO =====================
-function renderProductosConHighlight(lista, query) {
-    const contenedor = document.getElementById("productsGrid");
-    const palabras = query.split(/\s+/).filter(p => p);
-
-    contenedor.innerHTML = lista.map(prod => {
-        let nombre = prod.nombre;
-        let descripcion = prod.descripcion;
+        // Inicializar Firebase
+        app = firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
         
-        // Resaltar palabras encontradas
-        palabras.forEach(palabra => {
-            const regex = new RegExp(`(${palabra.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-            nombre = nombre.replace(regex, '<mark>$1</mark>');
-            descripcion = descripcion.replace(regex, '<mark>$1</mark>');
-        });
-
-        return `
-        <article class="product-card" data-category="${prod.categoria}" data-size="${prod.talla}" data-price="${prod.precio}">
-            <div class="product-card__image-wrapper">
-                <img src="${prod.imagen}" alt="${prod.nombre}" class="product-card__image" loading="lazy" />
-                ${prod.descuento ? `<span class="product-card__badge">-${prod.descuento}%</span>` : ''}
-            </div>
-            <div class="product-card__content">
-                <header class="product-card__header">
-                    <h3 class="product-card__title">${nombre}</h3>
-                    <span class="product-card__brand">${prod.marca}</span>
-                </header>
-                <p class="product-card__description">${descripcion}</p>
-                <div class="product-card__meta">
-                    <p class="product-card__tallas"><strong>Tallas:</strong> ${prod.talla}</p>
-                    <p class="product-card__stock"><strong>Stock:</strong> ${prod.stock}</p>
-                </div>
-                <div class="product-card__price">
-                    <span class="product-card__price-current">$${prod.precio.toFixed(2)}</span>
-                    ${prod.precioOriginal ? `<span class="product-card__price-old">$${prod.precioOriginal.toFixed(2)}</span>` : ''}
-                </div>
-                <button class="product-card__btn" aria-label="Agregar ${prod.nombre} al carrito">
-                    <i class="fas fa-shopping-bag"></i> Agregar
-                </button>
-            </div>
-        </article>
-        `;
-    }).join('');
-
-    asignarEventosAgregar(); // Asignar eventos a los botones
-}
-
-// ===================== UTILIDADES =====================
-function guardarHistorial(query) {
-    if (!query) return;
-    
-    let historial = JSON.parse(localStorage.getItem('historialBusqueda')) || [];
-    if (!historial.includes(query)) {
-        historial.unshift(query);
-        if (historial.length > 10) historial.pop();
-        localStorage.setItem('historialBusqueda', JSON.stringify(historial));
+        console.log('✅ Firebase inicializado correctamente');
+        return app;
+    } catch (error) {
+        console.error('❌ Error inicializando Firebase:', error);
+        throw error;
     }
 }
 
-function mostrarSinResultados(query) {
-    const contenedor = document.getElementById("productsGrid");
-    contenedor.innerHTML = `
-        <div class="sin-resultados">
-            <i class="fas fa-search"></i>
-            <p>No se encontraron productos para: <strong>${query}</strong></p>
-            <button onclick="location.reload()" class="btn-reiniciar">Ver todos los productos</button>
-        </div>
-    `;
+// Cache para productos (mejora el rendimiento)
+let productosCache = null;
+let ultimaActualizacion = null;
+const TIEMPO_CACHE = 5 * 60 * 1000; // 5 minutos
+
+// Función principal para obtener productos
+export async function obtenerProductos(forzarActualizacion = false) {
+    try {
+        // Inicializar Firebase si no está inicializado
+        await inicializarFirebase();
+        
+        // Verificar cache
+        const ahora = new Date().getTime();
+        const cacheValido = productosCache && 
+                           ultimaActualizacion && 
+                           (ahora - ultimaActualizacion) < TIEMPO_CACHE;
+
+        if (!forzarActualizacion && cacheValido) {
+            return productosCache;
+        }
+
+        console.log('🔄 Obteniendo productos desde Firestore...');
+
+        // Obtener desde Firebase usando la API compat
+        const querySnapshot = await db.collection("productos").get();
+        const productos = [];
+        
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            // Filtrar productos con datos válidos
+            if (data.nombre && data.precio !== undefined && data.stock !== undefined) {
+                productos.push({
+                    id: doc.id,
+                    ...data
+                });
+            }
+        });
+        
+        // Actualizar cache
+        productosCache = productos;
+        ultimaActualizacion = ahora;
+        
+        console.log(`✅ ${productos.length} productos obtenidos desde Firestore`);
+        return productos;
+        
+    } catch (error) {
+        console.error("Error al obtener productos:", error);
+        
+        // Si hay error y tenemos cache, devolver cache
+        if (productosCache) {
+            console.log('⚠️ Usando productos del cache debido a error');
+            return productosCache;
+        }
+        
+        // Si no hay cache, devolver array vacío
+        console.log('❌ No hay productos disponibles');
+        return [];
+    }
 }
+
+// Para compatibilidad con tu código existente
+export let productos = null;
+
+// Función para obtener productos por categoría
+export async function obtenerProductosPorCategoria(categoria) {
+    try {
+        await inicializarFirebase();
+        
+        console.log(`🔍 Buscando productos de categoría: ${categoria}`);
+        
+        const querySnapshot = await db.collection("productos")
+            .where("categoria", "==", categoria)
+            .get();
+        
+        const productos = [];
+        
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.nombre && data.precio !== undefined && data.stock !== undefined) {
+                productos.push({
+                    id: doc.id,
+                    ...data
+                });
+            }
+        });
+        
+        console.log(`✅ ${productos.length} productos encontrados en categoría "${categoria}"`);
+        return productos;
+        
+    } catch (error) {
+        console.error(`Error al obtener productos de categoría ${categoria}:`, error);
+        return [];
+    }
+}
+
+// Función para buscar productos
+export async function buscarProductos(termino) {
+    try {
+        const todosLosProductos = await obtenerProductos();
+        const terminoLower = termino.toLowerCase();
+        
+        const resultados = todosLosProductos.filter(producto => 
+            producto.nombre.toLowerCase().includes(terminoLower) ||
+            producto.marca.toLowerCase().includes(terminoLower) ||
+            producto.descripcion.toLowerCase().includes(terminoLower)
+        );
+        
+        console.log(`🔍 ${resultados.length} productos encontrados para: "${termino}"`);
+        return resultados;
+        
+    } catch (error) {
+        console.error(`Error al buscar productos:`, error);
+        return [];
+    }
+}
+
+// Función para obtener un producto por ID
+export async function obtenerProductoPorId(id) {
+    try {
+        await inicializarFirebase();
+        
+        const docRef = db.collection("productos").doc(id);
+        const docSnap = await docRef.get();
+        
+        if (docSnap.exists) {
+            return {
+                id: docSnap.id,
+                ...docSnap.data()
+            };
+        } else {
+            throw new Error("Producto no encontrado");
+        }
+        
+    } catch (error) {
+        console.error(`Error al obtener producto ${id}:`, error);
+        return null;
+    }
+}
+
+// Función para actualizar stock
+export async function actualizarStock(id, nuevoStock) {
+    try {
+        await inicializarFirebase();
+        
+        const docRef = db.collection("productos").doc(id);
+        await docRef.update({
+            stock: nuevoStock,
+            fechaActualizacion: new Date()
+        });
+        
+        // Limpiar cache
+        productosCache = null;
+        
+        console.log(`✅ Stock actualizado para producto ${id}: ${nuevoStock}`);
+        return await obtenerProductoPorId(id);
+        
+    } catch (error) {
+        console.error(`Error al actualizar stock:`, error);
+        throw error;
+    }
+}
+
+// Función para reducir stock después de una compra
+export async function reducirStock(id, cantidad = 1) {
+    try {
+        const producto = await obtenerProductoPorId(id);
+        
+        if (!producto) {
+            throw new Error("Producto no encontrado");
+        }
+        
+        if (producto.stock < cantidad) {
+            throw new Error("Stock insuficiente");
+        }
+        
+        const nuevoStock = producto.stock - cantidad;
+        return await actualizarStock(id, nuevoStock);
+        
+    } catch (error) {
+        console.error("Error al reducir stock:", error);
+        throw error;
+    }
+}
+
+// Función de inicialización
+export async function inicializarProductos() {
+    try {
+        productos = await obtenerProductos();
+        console.log(`✅ Productos inicializados: ${productos.length}`);
+        return productos;
+    } catch (error) {
+        console.error("Error al inicializar productos:", error);
+        return [];
+    }
+}
+
+// Para limpiar cache manualmente
+export function limpiarCache() {
+    productosCache = null;
+    ultimaActualizacion = null;
+    console.log('🧹 Cache de productos limpiado');
+}
+
+// Verificar estado de Firebase (útil para debugging)
+window.verificarFirebase = async function() {
+    try {
+        await inicializarFirebase();
+        const productos = await obtenerProductos(true);
+        console.log(`🔥 Firebase funcional. ${productos.length} productos:`, productos);
+        return { status: 'ok', productos };
+    } catch (error) {
+        console.error('🚨 Firebase error:', error);
+        return { status: 'error', error: error.message };
+    }
+};
