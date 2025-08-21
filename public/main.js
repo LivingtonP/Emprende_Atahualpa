@@ -385,3 +385,5 @@ console.log(`
 - mostrarProductosDebug() : Ver productos en consola  
 - window.verificarFirebase() : Verificar Firebase
 `);
+
+

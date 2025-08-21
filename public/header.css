@@ -6,10 +6,13 @@ body {
     padding-top: 120px;
 }
 
-
+.logo img {
+    width: 80px;
+    height: auto;
+}
 /* Header fijo */
 .main-header {
-    position: fixed;
+    position:fixed;
     top: 0;
     width: 100%;
     z-index: 1030;
@@ -950,6 +953,7 @@ body {
 /* Forzar el overlay cuando el menú está abierto */
 body.menu-open {
     overflow: hidden !important;
+    
 }
 
 /* Animación suave para el icono */
