@@ -118,10 +118,10 @@ function mostrarProductos(productos) {
         <div class="product-card" data-producto-id="${producto.id}">
             <div class="product-card__image-wrapper">
                 <img class="product-card__image" 
-                     src="${imagen}" 
-                     alt="${nombre}" 
-                     loading="lazy"
-                     onerror="this.src='https://via.placeholder.com/300x300?text=Sin+Imagen'">
+                    src="${imagen}" 
+                    alt="${nombre}" 
+                    loading="lazy"
+                    onerror="this.src='https://via.placeholder.com/300x300?text=Sin+Imagen'">
                 ${producto.descuento ? `<div class="product-card__badge">-${producto.descuento}%</div>` : ''}
             </div>
             <div class="product-card__content">

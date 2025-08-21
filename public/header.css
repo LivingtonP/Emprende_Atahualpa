@@ -1,4 +1,3 @@
-/* CSS LIMPIO Y OPTIMIZADO - Actualiza tu header.css */
 
 /* General */
 body {
@@ -6,6 +5,7 @@ body {
     font-family: 'Poppins', sans-serif !important;
     padding-top: 120px;
 }
+
 
 /* Header fijo */
 .main-header {
@@ -97,6 +97,7 @@ body {
     transition: color 0.3s !important;
     padding: 0.5rem 1rem !important;
     display: inline-block !important;
+    font-size: 13px;
 }
 
 .nav-links a:hover {

@@ -1,14 +1,11 @@
 <!-- header.html -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
 <header class="main-header">
     <!-- Barra superior -->
     <div class="top-bar">
-        <p>🚚 Envío gratis en pedidos superiores a $25 | No se aceptan devoluciones una vez entregado</p>
-        <p>📍 Envíos gratis dentro de la parroquia Atahualpa</p>
+        <p>Envíos gratis dentro de la parroquia Atahualpa</p>
     </div>
 
-    <!-- Barra de navegación -->    
+    <!-- Barra de navegación -->
     <nav class="navbar container">
         <!-- Botón menú hamburguesa (visible solo en móvil) -->
         <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
@@ -16,7 +13,9 @@
         </button>
 
         <!-- Logo -->
-        <a class="logo" href="#inicio">ATAHUALPA</a>
+        <a class="logo" href="#inicio">
+            <img src="./src/img/logo.png" alt="Logo LPM">
+        </a>
 
         <!-- Menú -->
         <ul class="nav-links" id="navLinks">
@@ -40,26 +39,10 @@
             <a href="#" aria-label="Mi cuenta">
                 <i class="fas fa-user"></i>
             </a>
-
-            <!-- Ícono del carrito -->
             <a href="#" class="cart" aria-label="Carrito">
                 <i class="fas fa-shopping-bag"></i>
                 <span class="badge">0</span>
             </a>
         </div>
     </nav>
-
-    <!-- Filtros de búsqueda -->
-    <div class="search-filters">
-        <label>
-            <input type="checkbox" id="stockToggle"> Solo disponibles
-        </label>
-        <select id="ordenSelect">
-            <option value="relevancia">Relevancia</option>
-            <option value="precio-asc">Precio: Bajo a Alto</option>
-            <option value="precio-desc">Precio: Alto a Bajo</option>
-        </select>
-    </div>
 </header>
-
-

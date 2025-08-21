@@ -61,8 +61,8 @@ async function obtenerProductos(forzarActualizacion = false) {
         // Verificar cache
         const ahora = new Date().getTime();
         const cacheValido = productosCache && 
-                           ultimaActualizacion && 
-                           (ahora - ultimaActualizacion) < TIEMPO_CACHE;
+                        ultimaActualizacion && 
+                        (ahora - ultimaActualizacion) < TIEMPO_CACHE;
 
         if (!forzarActualizacion && cacheValido) {
             console.log('📦 Usando productos del cache');
@@ -165,8 +165,8 @@ async function buscarProductos(termino) {
             const descripcion = producto.descripcion ? producto.descripcion.toLowerCase() : '';
             
             return nombre.includes(terminoLower) ||
-                   marca.includes(terminoLower) ||
-                   descripcion.includes(terminoLower);
+                marca.includes(terminoLower) ||
+                descripcion.includes(terminoLower);
         });
         
         console.log(`🔍 ${resultados.length} productos encontrados para: "${termino}"`);

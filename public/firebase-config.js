@@ -1,9 +1,8 @@
-// firebase-config.js
+
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
-// Tu configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyC-PmCzqUDNWhnHITRhToOw4YoDnQJGiMA",
   authDomain: "tiendaonlineatahualpa.firebaseapp.com",
@@ -14,13 +13,8 @@ const firebaseConfig = {
   measurementId: "G-JB9KQY6W8C"
 };
 
-// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inicializar Firestore
 export const db = getFirestore(app);
-
-// Inicializar Analytics (opcional)
 export const analytics = getAnalytics(app);
-
 export default app;

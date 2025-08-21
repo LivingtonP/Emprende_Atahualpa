@@ -51,8 +51,8 @@ export async function obtenerProductos(forzarActualizacion = false) {
         // Verificar cache
         const ahora = new Date().getTime();
         const cacheValido = productosCache && 
-                           ultimaActualizacion && 
-                           (ahora - ultimaActualizacion) < TIEMPO_CACHE;
+                        ultimaActualizacion && 
+                        (ahora - ultimaActualizacion) < TIEMPO_CACHE;
 
         if (!forzarActualizacion && cacheValido) {
             return productosCache;
