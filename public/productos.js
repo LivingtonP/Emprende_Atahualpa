@@ -121,7 +121,7 @@ async function obtenerProductos(forzarActualizacion = false) {
 // Variable global de productos
 let productos = null;
 
-// Función para obtener productos por categoría
+// Función para obtener productos por categoría - CORREGIDA
 async function obtenerProductosPorCategoria(categoria) {
     try {
         await inicializarFirebase();
@@ -139,12 +139,22 @@ async function obtenerProductosPorCategoria(categoria) {
             if (data.nombre && (data.precio !== undefined) && (data.stock !== undefined)) {
                 productos.push({
                     id: doc.id,
-                    ...data
+                    ...data,
+                    // Asegurar que estos campos existan (igual que en obtenerProductos)
+                    imagen: data.imagen || 'https://via.placeholder.com/300x300?text=Sin+Imagen',
+                    marca: data.marca || 'Sin marca',
+                    descripcion: data.descripcion || '',
+                    tallas: data.tallas || [],
+                    precio: parseFloat(data.precio) || 0,
+                    stock: parseInt(data.stock) || 0
                 });
+            } else {
+                console.warn(`⚠️ Producto con ID ${doc.id} en categoría "${categoria}" tiene datos incompletos:`, data);
             }
         });
         
         console.log(`✅ ${productos.length} productos encontrados en categoría "${categoria}"`);
+        console.table(productos.slice(0, 3)); // Debug: mostrar primeros 3 productos
         return productos;
         
     } catch (error) {
@@ -152,7 +162,6 @@ async function obtenerProductosPorCategoria(categoria) {
         return [];
     }
 }
-
 // Función para buscar productos
 async function buscarProductos(termino) {
     try {

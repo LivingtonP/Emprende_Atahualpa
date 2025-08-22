@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agregar Productos - Firebase v9</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 { text-align: center; color: #333; margin-bottom: 30px; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+    input, select, textarea {
+      width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;
+      font-size: 16px; box-sizing: border-box;
+    }
+    input[type="file"] { padding: 8px; background-color: #f9f9f9; }
+    textarea { height: 80px; resize: vertical; }
+    button {
+      width: 100%; padding: 12px; background-color: #4CAF50; color: white;
+      border: none; border-radius: 4px; font-size: 16px; cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover { background-color: #45a049; }
+    button:disabled { background-color: #ccc; cursor: not-allowed; }
+    .status { padding: 10px; margin: 10px 0; border-radius: 4px; text-align: center; font-weight: bold; }
+    .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    .loading { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    .required { color: red; }
+    .preview-container { margin-top: 10px; text-align: center; }
+    .preview-image { max-width: 200px; max-height: 200px; border: 1px solid #ddd; border-radius: 4px; display: none; }
+    .ruta-preview {
+      background-color: #f0f8ff; padding: 8px; border: 1px solid #b0d4f1;
+      border-radius: 4px; margin-top: 10px; font-family: monospace;
+      font-size: 12px; color: #0066cc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Agregar Nuevo Producto</h1>
+    <form id="formularioProducto">
+      <div class="form-group">
+        <label for="nombre">Nombre <span class="required">*</span></label>
+        <input type="text" id="nombre" name="nombre" required>
+      </div>
+      <div class="form-group">
+        <label for="categoria">Categoría <span class="required">*</span></label>
+        <select id="categoria" name="categoria" required>
+          <option value="">Selecciona una categoría</option>
+          <option value="hombre">Hombre</option>
+          <option value="mujer">Mujer</option>
+          <option value="niño">Niño</option>
+          <option value="niña">Niña</option>
+          <option value="unisex">Unisex</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="descripcion">Descripción <span class="required">*</span></label>
+        <textarea id="descripcion" name="descripcion" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="precio">Precio <span class="required">*</span></label>
+        <input type="number" id="precio" name="precio" step="0.01" min="0" required>
+      </div>
+      <div class="form-group">
+        <label for="stock">Stock <span class="required">*</span></label>
+        <input type="number" id="stock" name="stock" min="0" required>
+      </div>
+      <div class="form-group">
+        <label for="marca">Marca</label>
+        <input type="text" id="marca" name="marca">
+      </div>
+      <div class="form-group">
+        <label for="talla">Talla</label>
+        <input type="text" id="talla" name="talla" placeholder="Ej: S, M, L, 38, 40...">
+      </div>
+      <div class="form-group">
+        <label for="imagen">Imagen del Producto <span class="required">*</span></label>
+        <input type="file" id="imagen" name="imagen" accept="image/*" required>
+        <small>Se generará automáticamente la ruta según la categoría seleccionada</small>
+      </div>
+      <div class="form-group">
+        <label for="subcategoria">Subcategoría</label>
+        <select id="subcategoria" name="subcategoria">
+          <option value="">Selecciona (opcional)</option>
+          <option value="ofertas">Ofertas</option>
+          <option value="usadas">Usadas</option>
+          <option value="nuevas">Nuevas</option>
+        </select>
+      </div>
+      <button type="submit" id="btnGuardar">Guardar Producto</button>
+    </form>
+
+    <div class="preview-container">
+      <img id="previewImage" class="preview-image" alt="Vista previa">
+      <div id="rutaPreview" class="ruta-preview" style="display: none;"></div>
+    </div>
+    <div id="mensaje" style="display: none;"></div>
+  </div>
+
+  <!-- Firebase v9 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC-PmCzqUDNWhnHITRhToOw4YoDnQJGiMA",
+      authDomain: "tiendaonlineatahualpa.firebaseapp.com",
+      projectId: "tiendaonlineatahualpa",
+      storageBucket: "tiendaonlineatahualpa.appspot.com",
+      messagingSenderId: "650522644099",
+      appId: "1:650522644099:web:7ec67efca49a69d60d95b6",
+      measurementId: "G-JB9KQY6W8C"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Referencias
+    const formulario = document.getElementById('formularioProducto');
+    const btnGuardar = document.getElementById('btnGuardar');
+    const mensaje = document.getElementById('mensaje');
+    const inputImagen = document.getElementById('imagen');
+    const selectCategoria = document.getElementById('categoria');
+    const selectSubcategoria = document.getElementById('subcategoria');
+    const previewImage = document.getElementById('previewImage');
+    const rutaPreview = document.getElementById('rutaPreview');
+
+    // Generar ruta imagen
+    function generarRutaImagen(categoria, subcategoria, nombreArchivo) {
+      let carpeta = categoria;
+      if (subcategoria === 'ofertas' || subcategoria === 'usadas') carpeta = subcategoria;
+      else if (categoria === 'hombre') carpeta = 'hombres';
+      else if (categoria === 'mujer') carpeta = 'mujeres';
+      else if (categoria === 'niño') carpeta = 'ninos';
+      else if (categoria === 'niña') carpeta = 'ninas';
+      return `../src/${carpeta}/${nombreArchivo}`;
+    }
+
+    // Actualizar preview
+    function actualizarPreviewRuta() {
+      const categoria = selectCategoria.value;
+      const subcategoria = selectSubcategoria.value;
+      const archivo = inputImagen.files[0];
+      if (categoria && archivo) {
+        const ruta = generarRutaImagen(categoria, subcategoria, archivo.name);
+        rutaPreview.textContent = `Ruta que se guardará: ${ruta}`;
+        rutaPreview.style.display = 'block';
+      } else rutaPreview.style.display = 'none';
+    }
+
+    inputImagen.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          previewImage.src = ev.target.result;
+          previewImage.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+        actualizarPreviewRuta();
+      } else {
+        previewImage.style.display = 'none';
+        rutaPreview.style.display = 'none';
+      }
+    });
+    selectCategoria.addEventListener('change', actualizarPreviewRuta);
+    selectSubcategoria.addEventListener('change', actualizarPreviewRuta);
+
+    function mostrarMensaje(texto, tipo) {
+      mensaje.style.display = 'block';
+      mensaje.className = `status ${tipo}`;
+      mensaje.textContent = texto;
+      if (tipo === 'success') setTimeout(() => mensaje.style.display = 'none', 3000);
+    }
+
+    async function agregarProducto(datosProducto) {
+      try {
+        btnGuardar.disabled = true;
+        btnGuardar.textContent = 'Guardando...';
+        mostrarMensaje('Guardando producto...', 'loading');
+
+        const productoCompleto = {
+          ...datosProducto,
+          fechaCreacion: serverTimestamp(),
+          fechaActualizacion: serverTimestamp(),
+          ultimaVenta: null
+        };
+
+        // 👇 Guardar en la colección raíz "productos"
+        const docRef = await addDoc(collection(db, "productos"), productoCompleto);
+
+        mostrarMensaje(`Producto guardado exitosamente. ID: ${docRef.id}`, 'success');
+        formulario.reset();
+        previewImage.style.display = 'none';
+        rutaPreview.style.display = 'none';
+      } catch (error) {
+        mostrarMensaje(`Error al guardar: ${error.message}`, 'error');
+      } finally {
+        btnGuardar.disabled = false;
+        btnGuardar.textContent = 'Guardar Producto';
+      }
+    }
+
+    formulario.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(formulario);
+      const datosProducto = {};
+
+      for (let [key, value] of formData.entries()) {
+        if (key === 'precio') datosProducto[key] = parseFloat(value);
+        else if (key === 'stock') datosProducto[key] = parseInt(value);
+        else if (key === 'imagen') {
+          const categoria = selectCategoria.value;
+          const subcategoria = selectSubcategoria.value;
+          datosProducto[key] = value.name ? generarRutaImagen(categoria, subcategoria, value.name) : "";
+        }
+        else if (typeof value === "string") datosProducto[key] = value.trim();
+        else datosProducto[key] = value;
+      }
+
+      if (!datosProducto.nombre || !datosProducto.categoria || !datosProducto.descripcion || !datosProducto.precio || datosProducto.stock === undefined) {
+        mostrarMensaje('Por favor, completa todos los campos requeridos', 'error');
+        return;
+      }
+
+      await agregarProducto(datosProducto);
+    });
+
+    // Listar últimos productos (opcional, desde /productos)
+    window.listarProductos = async () => {
+      const q = query(collection(db, "productos"), orderBy("fechaCreacion", "desc"), limit(5));
+      const snap = await getDocs(q);
+      snap.forEach(doc => console.log(doc.id, doc.data()));
+    };
+  </script>
+</body>
+</html>

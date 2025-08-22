@@ -379,6 +379,30 @@ window.agregarAlCarritoHandler = agregarAlCarritoHandler;
 window.reiniciarProductos = reiniciarProductos;
 window.mostrarProductosDebug = mostrarProductosDebug;
 
+// 🔧 Hacer mostrarProductos disponible globalmente para filtros
+window.mostrarProductos = mostrarProductos;
+
+// 🔧 Función para conectar con el sistema de filtros
+window.conectarFiltros = () => {
+    console.log('🔗 Conectando sistema de filtros con main.js');
+    
+    // Cuando los productos se actualicen por filtros
+    document.addEventListener('productosActualizados', (event) => {
+        const { productos, contexto } = event.detail;
+        console.log(`📡 Evento recibido: ${contexto} con ${productos.length} productos`);
+        mostrarProductos(productos);
+    });
+    
+    console.log('✅ Filtros conectados exitosamente');
+};
+
+// Auto-conectar filtros cuando estén disponibles
+setTimeout(() => {
+    if (window.conectarFiltros) {
+        window.conectarFiltros();
+    }
+}, 1000);
+
 console.log(`
 🔧 FUNCIONES DE DEBUG DISPONIBLES:
 - reiniciarProductos() : Recargar productos
