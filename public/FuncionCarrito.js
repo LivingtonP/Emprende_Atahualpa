@@ -723,7 +723,7 @@ function enviarTextoWhatsApp(carrito) {
     const total = CartUtils.calculateTotal(carrito);
     const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
     
-    let mensaje = '🛒 *¡Hola! Me interesan estos productos:*\n\n';
+    let mensaje = '🛒 *¡Hola! he adquirido estos productos exitosamente:*\n\n';
     
     carrito.forEach((item, index) => {
         const subtotal = (item.precio * item.cantidad);
@@ -733,11 +733,17 @@ function enviarTextoWhatsApp(carrito) {
         mensaje += `   💰 Precio: ${subtotal.toFixed(2)}\n\n`;
     });
     
-    mensaje += `📊 *Resumen:*\n`;
+    mensaje += `📊 *Resumen de compra:*\n`;
     mensaje += `• Total de productos: ${totalItems}\n`;
     mensaje += `• *Total a pagar: ${total.toFixed(2)}*\n\n`;
     mensaje += `📅 Fecha: ${new Date().toLocaleDateString('es-EC')} ${new Date().toLocaleTimeString('es-EC')}\n\n`;
     mensaje += `¡Gracias! 😊`;
+    mensaje += `¡Por favor adjunta el pdf que se ha descargado en tu dispositivo!`;
+    
+    // Formatear número de WhatsApp
+    const numeroFormateado = CART_CONFIG.whatsappNumber.replace(/[^0-9]/g, '');
+    
+    // URL de WhatsApp con mensaje prellenado
 
     const urlWhatsApp = `https://wa.me/${CART_CONFIG.whatsappNumber}?text=${encodeURIComponent(mensaje)}`;
     
