@@ -97,8 +97,8 @@ function mostrarProductos(productos) {
             <div class="sin-resultados">
                 <i class="fas fa-search"></i>
                 <p>No hay productos disponibles</p>
-                <button onclick="window.location.reload()" class="btn-retry">🔄 Recargar</button>
-                <button onclick="reiniciarProductos()" class="btn-reiniciar">🔧 Reintentar</button>
+                
+                <button onclick="reiniciarProductos()" class="btn-reiniciar">Volver al Inicio</button>
             </div>
         `;
         return;

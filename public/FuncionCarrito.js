@@ -237,85 +237,129 @@ async function agregarAlCarrito(producto) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
- * Generar HTML de carrito vacío
+ * Generar HTML de carrito vacío - Versión moderna
  */
 function generateEmptyCartHTML() {
     return `
-        <div style="text-align: center; padding: 40px 20px;">
-            <i class="fas fa-shopping-cart" style="font-size: 4rem; color: #E5E7EB; margin-bottom: 16px;"></i>
-            <h3 style="color: #374151; margin-bottom: 8px; font-family: Arial, sans-serif;">Tu carrito está vacío</h3>
-            <p style="color: #9CA3AF; margin: 0; font-family: Arial, sans-serif;">¡Descubre nuestros increíbles productos!</p>
+        <div class="empty-cart-container">
+            <div class="empty-cart-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="m1 1 4 4 13 2 2 13v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1z"></path>
+                    <path d="M16 8V6a4 4 0 0 0-8 0v2"></path>
+                </svg>
+            </div>
+            <h3 class="empty-cart-title">Tu carrito está vacío</h3>
+            <p class="empty-cart-description">¡Descubre nuestros increíbles productos y añade algunos a tu carrito!</p>
+            <div class="empty-cart-suggestions">
+                <div class="suggestion-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 10 9 10s9-4.45 9-10V7l-10-5z"/>
+                        <path d="M12 22s8-4 8-10V7l-8-5-8 5v5c0 6 8 10 8 10z"/>
+                    </svg>
+                    <span>Productos de calidad garantizada</span>
+                </div>
+                <div class="suggestion-item">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m3 11 18-5v12L3 14v-3z"/>
+                        <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+                    </svg>
+                    <span>Envío gratuito disponible</span>
+                </div>
+            </div>
         </div>
     `;
 }
 
 /**
- * Generar HTML de loading
+ * Generar HTML de loading - Versión moderna
  */
 function generateLoadingHTML() {
     return `
-        <div style="text-align: center; padding: 40px 20px;">
-            <i class="fas fa-sync-alt fa-spin" style="font-size: 2.5rem; color: #cef63bff; margin-bottom: 16px;"></i>
-            <h3 style="color: #374151; margin: 16px 0 8px 0; font-family: Arial, sans-serif;">Validando Disponibilidad</h3>
-            <p style="color: #7d806bff; margin: 0; font-family: Arial, sans-serif;">Verificando stock en tiempo real...</p>
+        <div class="loading-container">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <h3 class="loading-title">Validando Disponibilidad</h3>
+            <p class="loading-description">Verificando stock en tiempo real...</p>
+            <div class="loading-progress">
+                <div class="progress-bar"></div>
+            </div>
         </div>
     `;
 }
 
 /**
- * Generar HTML de producto en carrito
+ * Generar HTML de producto en carrito - Versión moderna
  */
 function generateCartItemHTML(item, index) {
     const subtotal = (item.precio * item.cantidad).toFixed(2);
     
     return `
-        <div class="modal-carrito-item" data-item-index="${index}" style="
-            display: flex; align-items: center; padding: 15px; border: 1px solid #E5E7EB; 
-            border-radius: 12px; margin-bottom: 12px;
-            background: linear-gradient(135deg, #F9FAFB 0%, #FFFFFF 100%);
-            transition: all 0.2s ease;
-        ">
-            <img src="${item.imagen || CART_CONFIG.emptyImage}" 
-                alt="${item.nombre}" 
-                style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-right: 15px;"
-                onerror="this.src='${CART_CONFIG.emptyImage}'" />
-            
-            <div class="info" style="flex: 1; min-width: 0;">
-                <p style="margin: 0 0 5px 0; font-weight: 600; color: #111827; font-size: 14px; word-wrap: break-word;">
-                    ${item.nombre}
-                </p>
-                <p style="margin: 0 0 5px 0; color: #6B7280; font-size: 0.9em;">
-                    📏 Talla: <span style="font-weight: 500;">${item.talla}</span>
-                </p>
-                <p style="margin: 0; color: #059669; font-weight: 600; font-size: 0.9em;">
-                    💰 $${item.precio.toFixed(2)} × ${item.cantidad} = $${subtotal}
-                </p>
+        <div class="modern-cart-item" data-item-index="${index}">
+            <div class="item-image-container">
+                <img src="${item.imagen || CART_CONFIG.emptyImage}" 
+                    alt="${item.nombre}" 
+                    class="item-image"
+                    onerror="this.src='${CART_CONFIG.emptyImage}'" />
+                <div class="quantity-badge">${item.cantidad}</div>
             </div>
             
-            <div class="cantidad" style="
-                background: #f63b3bff; color: white; padding: 6px 12px; border-radius: 20px; 
-                font-weight: 600; margin-right: 10px; font-size: 14px;
-            ">×${item.cantidad}</div>
+            <div class="item-details">
+                <h4 class="item-name">${item.nombre}</h4>
+                <div class="item-meta">
+                    <span class="item-size">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                        Talla ${item.talla}
+                    </span>
+                    <span class="item-unit-price">$${item.precio.toFixed(2)} c/u</span>
+                </div>
+            </div>
             
-            <button class="btn-eliminar" 
-                    onclick="eliminarDelCarrito('${item.nombre.replace(/'/g, "\\'")}', '${item.talla}')" 
-                    title="Eliminar producto"
-                    style="
-                        background: #FEE2E2; color: #DC2626; border: none; padding: 8px; 
-                        border-radius: 8px; cursor: pointer; transition: all 0.2s;
-                        min-width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-                    "
-                    onmouseover="this.style.background='#FCA5A5'; this.style.transform='scale(1.05)'"
-                    onmouseout="this.style.background='#FEE2E2'; this.style.transform='scale(1)'">
-                <i class="fas fa-trash" style="font-size: 12px;"></i>
-            </button>
+            <div class="item-actions">
+                <div class="price-section">
+                    <span class="item-total">$${subtotal}</span>
+                </div>
+                <button class="btn-remove" 
+                        onclick="eliminarDelCarrito('${item.nombre.replace(/'/g, "\\'")}', '${item.talla}')" 
+                        title="Eliminar producto"
+                        aria-label="Eliminar ${item.nombre}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6"></polyline>
+                        <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
     `;
 }
 
 /**
- * Mostrar modal del carrito
+ * Mostrar modal del carrito - Versión moderna
  */
 async function mostrarModalCarrito() {
     const modal = document.getElementById('modalCarrito');
@@ -389,44 +433,67 @@ async function mostrarModalCarrito() {
             const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
             
             body.innerHTML = `
-                <div style="max-height: 60vh; overflow-y: auto; padding-right: 5px;">
-                    <h3 style="margin-bottom: 20px; color: #111827; border-bottom: 2px solid #E5E7EB; padding-bottom: 10px; font-family: Arial, sans-serif;">
-                        🛒 Tu carrito (${carrito.length} producto${carrito.length !== 1 ? 's' : ''}, ${totalItems} unidad${totalItems !== 1 ? 'es' : ''})
-                    </h3>
-                    <div class="carrito-items">
+                <div class="modern-cart-container">
+                    <div class="cart-header">
+                        <div class="cart-title">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cart-icon">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="m1 1 4 4 13 13v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-4H4l-3-7"></path>
+                                <path d="M8 12l8-8"></path>
+                            </svg>
+                            <h2>Mi Carrito</h2>
+                        </div>
+                        <div class="cart-summary">
+                            <span class="items-count">${totalItems} artículo${totalItems !== 1 ? 's' : ''}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-items-container">
                         ${carrito.map((item, index) => generateCartItemHTML(item, index)).join('')}
                     </div>
-                </div>
-                
-                <div class="modal-carrito-total" style="
-                    text-align: center; padding: 20px; border-top: 2px solid #E5E7EB; 
-                    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%); 
-                    border-radius: 12px; margin: 20px 0;
-                ">
-                    <h2 style="margin: 0; color: #111827; font-family: Arial, sans-serif;">
-                        💳 Total: <span style="color: #059669; font-weight: bold;">${total.toFixed(2)}</span>
-                    </h2>
-                </div>
-                
-                <div class="modal-carrito-footer" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
-                    <button onclick="cerrarModalCarrito()" 
-                            style="background: #6B7280; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: Arial, sans-serif; transition: all 0.2s;"
-                            onmouseover="this.style.background='#4B5563'"
-                            onmouseout="this.style.background='#6B7280'">
-                        🔄 Seguir comprando
-                    </button>
-                    <button onclick="vaciarCarrito()" 
-                            style="background: #DC2626; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-family: Arial, sans-serif; transition: all 0.2s;"
-                            onmouseover="this.style.background='#B91C1C'"
-                            onmouseout="this.style.background='#DC2626'">
-                        🗑️ Vaciar carrito
-                    </button>
-                    <button onclick="procesarCompraWhatsApp()" 
-                            style="background: #10B981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1.1em; font-family: Arial, sans-serif; transition: all 0.2s;"
-                            onmouseover="this.style.background='#059669'; this.style.transform='scale(1.02)'"
-                            onmouseout="this.style.background='#10B981'; this.style.transform='scale(1)'">
-                        💬 Comprar por WhatsApp
-                    </button>
+                    
+                    <div class="cart-summary-section">
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal</span>
+                            <span class="summary-value">$${total.toFixed(2)}</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span class="summary-label">Total</span>
+                            <span class="summary-value total-amount">$${total.toFixed(2)}</span>
+                        </div>
+                        <div class="savings-info">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7v10c0 5.55 3.84 10 9 10 1.14 0 2.25-.16 3.33-.47"></path>
+                                <path d="m22 12-8.5 8.5a1.94 1.94 0 0 1-2.76 0L2 12"></path>
+                            </svg>
+                            <span>Envío gratuito disponible</span>
+                        </div>
+                    </div>
+                    
+                    <div class="cart-actions">
+                        <button class="btn btn-secondary" onclick="cerrarModalCarrito()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 12H5M12 19l-7-7 7-7"/>
+                            </svg>
+                            Seguir Comprando
+                        </button>
+                        
+                        <button class="btn btn-danger" onclick="vaciarCarrito()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3,6 5,6 21,6"></polyline>
+                                <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                            </svg>
+                            Vaciar Carrito
+                        </button>
+                        
+                        <button class="btn btn-whatsapp" onclick="procesarCompraWhatsApp()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                            </svg>
+                            Comprar por WhatsApp
+                        </button>
+                    </div>
                 </div>
             `;
         }
@@ -447,6 +514,31 @@ async function mostrarModalCarrito() {
     modal.setAttribute('tabindex', '-1');
     modal.focus();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
