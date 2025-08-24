@@ -256,9 +256,9 @@ function generateEmptyCartHTML() {
 function generateLoadingHTML() {
     return `
         <div style="text-align: center; padding: 40px 20px;">
-            <i class="fas fa-sync-alt fa-spin" style="font-size: 2.5rem; color: #3B82F6; margin-bottom: 16px;"></i>
+            <i class="fas fa-sync-alt fa-spin" style="font-size: 2.5rem; color: #cef63bff; margin-bottom: 16px;"></i>
             <h3 style="color: #374151; margin: 16px 0 8px 0; font-family: Arial, sans-serif;">Validando Disponibilidad</h3>
-            <p style="color: #6B7280; margin: 0; font-family: Arial, sans-serif;">Verificando stock en tiempo real...</p>
+            <p style="color: #7d806bff; margin: 0; font-family: Arial, sans-serif;">Verificando stock en tiempo real...</p>
         </div>
     `;
 }
@@ -294,7 +294,7 @@ function generateCartItemHTML(item, index) {
             </div>
             
             <div class="cantidad" style="
-                background: #3B82F6; color: white; padding: 6px 12px; border-radius: 20px; 
+                background: #f63b3bff; color: white; padding: 6px 12px; border-radius: 20px; 
                 font-weight: 600; margin-right: 10px; font-size: 14px;
             ">×${item.cantidad}</div>
             
