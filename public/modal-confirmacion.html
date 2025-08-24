@@ -1,0 +1,583 @@
+
+<!-- modal-confirmacion.html -->
+<style>
+/* Importar Font Awesome para iconos profesionales */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(6px);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeInBackdrop 0.3s ease-out;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+@keyframes fadeInBackdrop {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: #ffffff;
+    padding: 0;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 380px;
+    max-height: 85vh;
+    box-shadow: 0 15px 30px rgba(15, 23, 42, 0.2);
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+    animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+.modal-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    z-index: 10;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+    padding: 16px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.modal-header h3::before {
+    content: "\f00c";
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 12px;
+}
+
+/* Contenedor scrollable */
+.modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    max-height: calc(85vh - 140px); /* Resta header y footer */
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 4px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+#detalleTotal {
+    text-align: center;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-radius: 10px;
+    border: 1px solid #a7f3d0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #047857;
+    position: relative;
+}
+
+#detalleTotal::before {
+    content: "Total a pagar";
+    display: block;
+    font-size: 11px;
+    color: #059669;
+    font-weight: 500;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metodo-pago {
+    margin-bottom: 16px;
+}
+
+.metodo-pago::before {
+    content: "Método de pago";
+    display: block;
+    font-size: 13px;
+    color: #374151;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.metodo-pago label {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    margin: 6px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.metodo-pago label:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+    transform: translateY(-1px);
+}
+
+.metodo-pago input[type="radio"] {
+    display: none;
+}
+
+.metodo-pago input[type="radio"]:checked + .payment-content {
+    border-color: #1d4ed8;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+.payment-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.payment-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 14px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.payment-icon.transfer {
+    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+}
+
+.payment-icon.transfer::before {
+    content: "\f19c";
+}
+
+.payment-icon.cash {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.payment-icon.cash::before {
+    content: "\f53a";
+}
+
+.payment-details h5 {
+    font-size: 13px;
+    color: #111827;
+    font-weight: 600;
+    margin: 0 0 2px 0;
+}
+
+.payment-details p {
+    font-size: 11px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.datos-transferencia {
+    display: none;
+    margin-bottom: 16px;
+    padding: 14px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 12px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { 
+        opacity: 0; 
+        max-height: 0; 
+        transform: translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        max-height: 300px; 
+        transform: translateY(0); 
+    }
+}
+
+.bank-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.bank-logo {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-size: 14px;
+    color: white;
+}
+
+.bank-logo::before {
+    content: "\f19c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+.bank-info h6 {
+    font-size: 13px;
+    color: #111827;
+    font-weight: 600;
+    margin: 0 0 2px 0;
+}
+
+.bank-info p {
+    font-size: 10px;
+    color: #6b7280;
+    margin: 0;
+}
+
+.account-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.account-item:last-of-type {
+    border-bottom: none;
+}
+
+.account-label {
+    font-size: 11px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.account-value {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.account-number {
+    font-size: 12px;
+    font-weight: 600;
+    color: #111827;
+    font-family: 'Courier New', monospace;
+}
+
+.copy-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-weight: 500;
+}
+
+.copy-btn::before {
+    content: "\f0c5";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+.copy-btn:hover {
+    background: #2563eb;
+    transform: scale(1.05);
+}
+
+.copy-btn.copied {
+    background: #059669;
+}
+
+.copy-btn.copied::before {
+    content: "\f00c";
+}
+
+.transfer-note {
+    margin-top: 10px;
+    padding: 8px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: 6px;
+    border-left: 3px solid #f59e0b;
+}
+
+.transfer-note p {
+    font-size: 10px;
+    color: #92400e;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    line-height: 1.3;
+}
+
+.transfer-note p::before {
+    content: "\f05a";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #f59e0b;
+    flex-shrink: 0;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    padding: 16px;
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+    flex-shrink: 0;
+}
+
+.btn {
+    flex: 1;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-cancel {
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 2px solid #e5e7eb;
+}
+
+.btn-cancel::before {
+    content: "\f00d";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+.btn-cancel:hover {
+    background: #e5e7eb;
+    color: #374151;
+    transform: translateY(-1px);
+}
+
+.btn-confirm {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+}
+
+.btn-confirm::before {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+
+.btn-confirm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(16, 185, 129, 0.35);
+}
+
+@media(max-width: 480px) {
+    .modal {
+        padding: 10px;
+    }
+    
+    .modal-content {
+        max-width: 100%;
+        max-height: 90vh;
+    }
+    
+    .modal-header {
+        padding: 14px;
+    }
+    
+    .modal-body {
+        padding: 14px;
+        max-height: calc(90vh - 120px);
+    }
+    
+    #detalleTotal {
+        font-size: 15px;
+        padding: 10px;
+    }
+    
+    .modal-footer {
+        padding: 14px;
+    }
+    
+    .btn {
+        padding: 9px 14px;
+        font-size: 12px;
+    }
+}
+
+@media(max-width: 320px) {
+    .modal-footer {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        flex: none;
+    }
+}
+</style>
+
+<div id="confirmacionModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div class="modal-header">
+            <h3>Confirmar tu compra</h3>
+        </div>
+        
+        <div class="modal-body">
+            <p id="detalleTotal">Total: $0.00</p>
+
+            <div class="metodo-pago">
+                <label>
+                    <input type="radio" name="metodoPago" value="Transferencia">
+                    <div class="payment-content">
+                        <div class="payment-icon transfer"></div>
+                        <div class="payment-details">
+                            <h5>Transferencia Bancaria</h5>
+                            <p>Pago seguro a través de tu banco</p>
+                        </div>
+                    </div>
+                </label>
+                
+                <label>
+                    <input type="radio" name="metodoPago" value="Efectivo">
+                    <div class="payment-content">
+                        <div class="payment-icon cash"></div>
+                        <div class="payment-details">
+                            <h5>Pago Contraentrega</h5>
+                            <p>Paga en efectivo al recibir tu pedido</p>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div id="datosTransferencia" class="datos-transferencia">
+                <div class="bank-header">
+                    <div class="bank-logo"></div>
+                    <div class="bank-info">
+                        <h6>Banco Pichincha</h6>
+                        <p>Transferencia disponible 24/7</p>
+                    </div>
+                </div>
+                
+                <div class="account-item">
+                    <span class="account-label">Cédula/RUC:</span>
+                    <div class="account-value">
+                        <span class="account-number" id="cedula">2450192378</span>
+                        <button class="copy-btn" onclick="copiarTexto('cedula', this)">Copiar</button>
+                    </div>
+                </div>
+                
+                <div class="account-item">
+                    <span class="account-label">Cuenta Ahorros:</span>
+                    <div class="account-value">
+                        <span class="account-number" id="cuenta">2212564694</span>
+                        <button class="copy-btn" onclick="copiarTexto('cuenta', this)">Copiar</button>
+                    </div>
+                </div>
+                
+                <div class="transfer-note">
+                    <p>Envía el comprobante después de realizar el pago para confirmar tu pedido.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button onclick="cerrarConfirmacion()" class="btn btn-cancel">Cancelar</button>
+            <button onclick="confirmarCompra()" class="btn btn-confirm">Confirmar pedido</button>
+        </div>
+    </div>
+</div>
+

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atahualpa Store Online</title>
@@ -67,17 +69,12 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmación -->
-    <div id="modalConfirmacion" class="modal-confirmacion">
-        <div class="modal-confirmacion-content">
-            <h3 id="modalConfirmacionTitulo">Confirmar acción</h3>
-            <p id="modalConfirmacionMensaje"></p>
-            <div class="modal-confirmacion-footer">
-                <button id="modalCancelarBtn">Cancelar</button>
-                <button id="modalAceptarBtn">Aceptar</button>
-            </div>
-        </div>
-    </div>
+    <div id="modal-container"></div>
+
+    
+
+
+
 
     <!-- Contenedor de notificaciones -->
     <div id="notifications-container" class="notifications-container"></div>
@@ -103,21 +100,24 @@
 
     <script src="./stock-manager.js"></script>
     
-
-    
-    
     <!-- 3. Funciones del carrito -->
-     <script src="./notificaciones.js"></script>  
+    <script src="./notificaciones.js"></script>  
     <script src="./FuncionCarrito.js"></script>
     <script src="./carrito_mostrar.js"></script>
-    
-          <!-- 1. PRIMERO las notificaciones -->
-    
-    
-    <!-- 4. Finalmente main.js -->
+
+    <div id="modal-container"></div>
+
+    <script>
+    fetch('./modal-confirmacion.html')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('modal-container').innerHTML = html;
+        })
+        .catch(err => console.error("Error cargando modal:", err));
+    </script>
+
     <script src="./main.js"></script>
 
-    
     
     <footer class="footer">
         <div class="footer-container">

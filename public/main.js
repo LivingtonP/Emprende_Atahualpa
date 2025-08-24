@@ -411,3 +411,130 @@ console.log(`
 `);
 
 
+
+
+
+
+// Cargar modal desde archivo externo
+async function cargarModalConfirmacion() {
+    try {
+        const res = await fetch('./modal-confirmacion.html');
+        const html = await res.text();
+        document.getElementById('modal-container').innerHTML = html;
+        
+        // Esperar un momento para que el DOM se actualice
+        setTimeout(inicializarEventosModal, 100);
+        
+    } catch(err) {
+        console.error("Error cargando modal:", err);
+    }
+}
+
+// Función separada para inicializar eventos del modal
+function inicializarEventosModal() {
+    try {
+        // Verificar que los elementos existen antes de asignar eventos
+        const modalClose = document.querySelector('.modal-close');
+        const confirmacionModal = document.querySelector('#confirmacionModal');
+        const metodoPagoInputs = document.querySelectorAll('input[name="metodoPago"]');
+        
+        if (!modalClose || !confirmacionModal || metodoPagoInputs.length === 0) {
+            console.error("No se encontraron los elementos del modal");
+            return;
+        }
+        
+        // Evento cerrar modal
+        modalClose.onclick = cerrarConfirmacion;
+
+        // Evento de clic fuera del modal
+        confirmacionModal.onclick = (e) => {
+            if(e.target.id === 'confirmacionModal') cerrarConfirmacion();
+        }
+
+        // Mostrar/Ocultar datos de transferencia
+        metodoPagoInputs.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const datos = document.getElementById("datosTransferencia");
+                const label = this.closest('label');
+                
+                if (!datos || !label) return;
+                
+                // Remover clase selected de todas las labels
+                document.querySelectorAll('.metodo-pago label').forEach(l => l.classList.remove('selected'));
+                
+                // Agregar clase selected a la label actual
+                label.classList.add('selected');
+                
+                // Mostrar/ocultar datos de transferencia
+                datos.style.display = this.value === "Transferencia" ? "block" : "none";
+            });
+        });
+
+        // Agregar CSS para label seleccionada (solo una vez)
+        if (!document.getElementById('modal-selected-style')) {
+            const style = document.createElement('style');
+            style.id = 'modal-selected-style';
+            style.textContent = `
+                .metodo-pago label.selected .payment-content {
+                    border-color: #1d4ed8 !important;
+                    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        console.log("Modal cargado y eventos inicializados correctamente");
+
+    } catch(err) {
+        console.error("Error inicializando eventos del modal:", err);
+    }
+}
+
+// Inicializar al cargar página
+window.addEventListener('DOMContentLoaded', cargarModalConfirmacion);
+
+function mostrarConfirmacion(total, totalItems) {
+    const detalle = document.getElementById("detalleTotal");
+    if(detalle) detalle.textContent = `${totalItems} productos - TOTAL: $${total.toFixed(2)}`;
+    document.getElementById("confirmacionModal").style.display = "flex";
+}
+
+function cerrarConfirmacion() {
+    const modal = document.getElementById("confirmacionModal");
+    if(modal) modal.style.display = "none";
+}
+
+// Función copiar texto mejorada
+function copiarTexto(elementId, button) {
+    const elemento = document.getElementById(elementId);
+    const texto = elemento.textContent;
+    
+    navigator.clipboard.writeText(texto).then(() => {
+        const originalText = button.textContent;
+        button.textContent = '¡Copiado!';
+        button.classList.add('copied');
+        
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('copied');
+        }, 2000);
+    }).catch(() => {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = texto;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        const originalText = button.textContent;
+        button.textContent = '¡Copiado!';
+        button.classList.add('copied');
+        
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('copied');
+        }, 2000);
+    });
+}
+

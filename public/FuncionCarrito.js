@@ -448,9 +448,16 @@ async function mostrarModalCarrito() {
     modal.focus();
 }
 
-/**
- * Procesar compra con WhatsApp
- */
+
+
+
+
+
+
+
+let carritoPendiente = [];
+
+/** Abrir modal de confirmación con carrito pendiente */
 async function procesarCompraWhatsApp() {
     const carrito = CartUtils.get();
     
@@ -458,111 +465,216 @@ async function procesarCompraWhatsApp() {
         notificacion.error('Tu carrito está vacío', 'No hay productos');
         return false;
     }
-    
+
+    // Guardamos carrito pendiente
+    carritoPendiente = carrito;
+
+    // Total y unidades
+    const total = CartUtils.calculateTotal(carrito);
+    const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+
+    // Mostrar total en modal
+    const detalleTotal = document.getElementById("detalleTotal");
+    if (detalleTotal) {
+        detalleTotal.textContent = `🛒 ${totalItems} productos - TOTAL: $${total.toFixed(2)}`;
+    }
+
+    // Mostrar modal usando CSS
+    const modal = document.getElementById("confirmacionModal");
+    if (modal) {
+        modal.style.display = "block"; // solo cambiamos display
+    }
+}
+
+/** Cerrar modal de confirmación */
+function cerrarConfirmacion() {
+    const modal = document.getElementById("confirmacionModal");
+    if (modal) modal.style.display = "none";
+    carritoPendiente = [];
+}
+
+/** Confirmar compra y continuar flujo */
+async function confirmarCompra() {
+    const metodoRadio = document.querySelector('input[name="metodoPago"]:checked');
+    if (!metodoRadio) {
+        notificacion.error('Debes seleccionar un método de pago.', 'Método de Pago');
+        return false;
+    }
+
+    const metodo = metodoRadio.value;
+    const carrito = carritoPendiente;
+    if (!carrito.length) return;
+
     try {
         notificacion.info('Procesando tu compra...', '🔄 Procesando Compra', 0);
-        
-        // Validar disponibilidad final si la función existe
+
+        // Validar disponibilidad final
         if (typeof window.validarDisponibilidadCarrito === 'function') {
             const validacion = await window.validarDisponibilidadCarrito(carrito);
-            
             if (!validacion.todoDisponible) {
-                notificacion.error(
-                    'Algunos productos ya no tienen stock suficiente. Revisa tu carrito.',
-                    'Stock Insuficiente'
-                );
+                notificacion.error('Algunos productos ya no tienen stock suficiente.', 'Stock Insuficiente');
                 mostrarModalCarrito();
                 return false;
             }
         }
-        
-        // Reducir stock si la función existe
+
+        // Reducir stock
         if (typeof window.reducirStockEnFirebase === 'function') {
             const resultadoStock = await window.reducirStockEnFirebase(carrito);
-            
             if (!resultadoStock.exito) {
                 notificacion.error(`Error: ${resultadoStock.mensaje}`, 'Error de Procesamiento');
                 return false;
             }
         }
-        
-        // Registrar venta si la función existe
+
+        // Registrar venta
         if (typeof window.registrarVenta === 'function') {
-            await window.registrarVenta(carrito, { 
-                origen: 'tienda_online', 
+            await window.registrarVenta(carrito, {
+                origen: 'tienda_online',
                 fecha: new Date().toISOString(),
-                total: CartUtils.calculateTotal(carrito)
+                total: CartUtils.calculateTotal(carrito),
+                metodoPago: metodo
             });
         }
-        
+
         // Enviar a WhatsApp
-        await enviarCarritoWhatsApp();
-        
-        // Limpiar carrito
+        if (typeof window.enviarCarritoWhatsApp === 'function') {
+            await enviarCarritoWhatsApp(carrito, metodo);
+        }
+
+        // Limpiar carrito y cerrar modales
         CartUtils.clear();
         cerrarModalCarrito();
-        
+        cerrarConfirmacion();
+
         notificacion.exito(
             '¡Compra procesada correctamente!\n• Stock actualizado\n• Datos enviados\n• Redirigiendo a WhatsApp...',
             '🎉 ¡Compra Exitosa!', 6000
         );
-        
-        // Reiniciar productos si la función existe
+
         if (typeof window.reiniciarProductos === 'function') {
             setTimeout(window.reiniciarProductos, 1000);
         }
-        
+
         return true;
-        
+
     } catch (error) {
         console.error('Error procesando compra:', error);
-        notificacion.error(
-            'Error inesperado al procesar la compra. Intenta nuevamente.',
-            'Error Inesperado'
-        );
+        notificacion.error('Error inesperado al procesar la compra. Intenta nuevamente.', 'Error Inesperado');
         return false;
     }
 }
 
-/**
- * Enviar carrito a WhatsApp
- */
-async function enviarCarritoWhatsApp() {
-    const carrito = CartUtils.get();
-    if (carrito.length === 0) {
-        notificacion.advertencia('El carrito está vacío', 'Sin Productos');
-        return;
+// Mostrar u ocultar datos de transferencia
+document.querySelectorAll('input[name="metodoPago"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const datos = document.getElementById("datosTransferencia");
+        if (datos) datos.style.display = this.value === "Transferencia" ? "block" : "none";
+    });
+});
+
+// Copiar texto de cédula o cuenta
+function copiarTexto(idElemento) {
+    const el = document.getElementById(idElemento);
+    if (el) {
+        navigator.clipboard.writeText(el.innerText).then(() => {
+            alert("✅ Copiado: " + el.innerText);
+        });
+    }
+}
+
+
+/** Confirmar compra y continuar flujo */
+async function confirmarCompra() {
+    const metodoRadio = document.querySelector('input[name="metodoPago"]:checked');
+    if (!metodoRadio) {
+    notificacion.error('Debes seleccionar un método de pago.', 'Método de Pago');
+    return false;
     }
 
+    const metodo = metodoRadio.value;
+    const carrito = carritoPendiente;
+    if (!carrito.length) return;
+
     try {
-        // Intentar generar PDF si jsPDF está disponible
-        if (typeof window.jspdf !== 'undefined' && window.jspdf.jsPDF) {
-            notificacion.info('Generando PDF del pedido...', '📄 Creando Documento', 3000);
-            await generatePDF(carrito);
-            notificacion.exito('¡PDF descargado exitosamente!', '✅ PDF Generado', 4000);
-        } else {
-            notificacion.info('Preparando detalles del pedido...', '📋 Procesando', 2000);
+    notificacion.info('Procesando tu compra...', '🔄 Procesando Compra', 0);
+
+    // Validar disponibilidad final
+    if (typeof window.validarDisponibilidadCarrito === 'function') {
+        const validacion = await window.validarDisponibilidadCarrito(carrito);
+        if (!validacion.todoDisponible) {
+        notificacion.error('Algunos productos ya no tienen stock suficiente. Revisa tu carrito.', 'Stock Insuficiente');
+        mostrarModalCarrito();
+        return false;
         }
-        
-        // Enviar por WhatsApp
-        enviarTextoWhatsApp(carrito);
-        
+    }
+
+    // Reducir stock
+    if (typeof window.reducirStockEnFirebase === 'function') {
+        const resultadoStock = await window.reducirStockEnFirebase(carrito);
+        if (!resultadoStock.exito) {
+        notificacion.error(`Error: ${resultadoStock.mensaje}`, 'Error de Procesamiento');
+        return false;
+        }
+    }
+
+    // Registrar venta
+    if (typeof window.registrarVenta === 'function') {
+        await window.registrarVenta(carrito, { 
+        origen: 'tienda_online', 
+        fecha: new Date().toISOString(),
+        total: CartUtils.calculateTotal(carrito),
+        metodoPago: metodo
+        });
+    }
+
+    // Enviar a WhatsApp con método de pago
+    await enviarCarritoWhatsApp(carrito, metodo);
+
+    // Limpiar carrito y cerrar modales
+    CartUtils.clear();
+    cerrarModalCarrito();
+    cerrarConfirmacion();
+
+    notificacion.exito(
+        '¡Compra procesada correctamente!\n• Stock actualizado\n• Datos enviados\n• Redirigiendo a WhatsApp...',
+        '🎉 ¡Compra Exitosa!', 6000
+    );
+
+    if (typeof window.reiniciarProductos === 'function') {
+        setTimeout(window.reiniciarProductos, 1000);
+    } 
+    
+    return true;
+
     } catch (error) {
-        console.warn('Error generando PDF:', error);
-        notificacion.advertencia('Enviando detalles por texto solamente.', 'Enviando a WhatsApp', 3000);
-        enviarTextoWhatsApp(carrito);
+    console.error('Error procesando compra:', error);
+    notificacion.error('Error inesperado al procesar la compra. Intenta nuevamente.', 'Error Inesperado');
+    return false;
     }
 }
 
 
 
-
-
+/**
+ * Enviar carrito a WhatsApp (PDF + texto)
+ */
+async function enviarCarritoWhatsApp(carrito, metodoPago) {
+    try {
+        if (typeof window.jspdf !== 'undefined' && window.jspdf.jsPDF) {
+            await generatePDF(carrito, metodoPago);
+        }
+        enviarTextoWhatsApp(carrito, metodoPago);
+    } catch (error) {
+        console.warn('Error generando PDF:', error);
+        enviarTextoWhatsApp(carrito, metodoPago);
+    }
+}
 
 /**  
  * Generar PDF del pedido  
  */ 
-async function generatePDF(carrito) {     
+async function generatePDF(carrito, metodoPago) {     
     try {         
         const { jsPDF } = window.jspdf;         
         const doc = new jsPDF();  
@@ -583,19 +695,15 @@ async function generatePDF(carrito) {
         doc.setFontSize(20);         
         doc.setTextColor(40);         
         doc.text('¡Gracias por tu compra!', 105, 25, { align: 'center' });                  
-
         doc.setFontSize(14);         
         doc.setTextColor(80);         
         doc.text('Detalle de tu pedido', 105, 35, { align: 'center' });                  
-
         doc.setFontSize(10);         
         doc.setTextColor(120);         
-        doc.text(`Fecha: ${new Date().toLocaleDateString('es-EC')} - ${new Date().toLocaleTimeString('es-EC')}`, 105, 45, { align: 'center' });          
+        doc.text(`Fecha: ${new Date().toLocaleString('es-EC')}`, 105, 45, { align: 'center' });          
 
         let y = 60;         
         const margin = 15;         
-
-        // Línea separadora         
         doc.setDrawColor(200);         
         doc.line(margin, y - 5, 195, y - 5);          
 
@@ -605,12 +713,11 @@ async function generatePDF(carrito) {
                 y = 30;             
             }              
 
-            // Imagen del producto             
             if (item.imagen && item.imagen !== CART_CONFIG.emptyImage) {                 
                 try {                     
                     const imgBase64 = await getBase64FromUrl(item.imagen);                     
                     doc.addImage(imgBase64, 'JPEG', margin, y, 25, 25);                 
-                } catch (err) {                     
+                } catch {                     
                     doc.setDrawColor(200);                     
                     doc.rect(margin, y, 25, 25);                     
                     doc.setFontSize(8);                     
@@ -622,7 +729,6 @@ async function generatePDF(carrito) {
                 doc.rect(margin, y, 25, 25);             
             }              
 
-            // Info producto             
             const precio = item.precio || 0;             
             const cantidad = item.cantidad || 0;             
             const subtotal = precio * cantidad;              
@@ -630,19 +736,15 @@ async function generatePDF(carrito) {
             doc.setFontSize(12);             
             doc.setTextColor(40);             
             doc.text(`${index + 1}. ${item.nombre}`, margin + 30, y + 8);                          
-
             doc.setFontSize(10);             
             doc.setTextColor(80);             
             doc.text(`Talla: ${item.talla}`, margin + 30, y + 15);             
             doc.text(`Cantidad: ${cantidad}`, margin + 30, y + 20);             
             doc.text(`Precio unitario: ${precio.toFixed(2)}`, margin + 30, y + 25);                          
-
             doc.setFontSize(11);             
             doc.setTextColor(40);             
             doc.text(`Subtotal: ${subtotal.toFixed(2)}`, margin + 120, y + 25);              
-
             y += 35;                          
-
             if (index < carrito.length - 1) {                 
                 doc.setDrawColor(230);                 
                 doc.line(margin, y - 5, 195, y - 5);             
@@ -652,74 +754,51 @@ async function generatePDF(carrito) {
         // Totales         
         const total = CartUtils.calculateTotal(carrito);         
         const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);                  
-
         y += 10;         
         doc.setDrawColor(100);         
         doc.line(margin, y, 195, y);                  
-
         y += 15;         
         doc.setFontSize(14);         
         doc.setTextColor(40);         
         doc.text(`Total de productos: ${totalItems}`, margin, y);         
         doc.text(`TOTAL A PAGAR: ${total.toFixed(2)}`, 195, y, { align: 'right' });          
+        y += 10;
+        doc.setFontSize(12);
+        doc.setTextColor(50);
+        doc.text(`Método de pago: ${metodoPago}`, margin, y);
 
-        // Pie de página con texto         
+        // Pie
         y += 20;         
         doc.setFontSize(9);         
         doc.setTextColor(120);         
-        doc.text(
-            'Este documento es un resumen de tu pedido. Para confirmar tu compra, envía este PDF por WhatsApp.',
-            105,
-            y,
-            { align: 'center', maxWidth: 160 }
-        );          
+        doc.text('Este documento es un resumen de tu pedido. Para confirmar tu compra, envía este PDF por WhatsApp.', 105, y, { align: 'center', maxWidth: 160 });          
 
-        // --- Footer con LOGO en todas las páginas ---
+        // Logo en footer
         try {
             const logoBase64 = await getBase64FromUrl("./src/img/logofoter.png");
             const pageCount = doc.internal.getNumberOfPages();
-
             for (let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
                 const pageHeight = doc.internal.pageSize.height;
                 const pageWidth = doc.internal.pageSize.width;
-
-                // Logo centrado en el pie de página
-                doc.addImage(
-                logoBase64,
-                "PNG",
-                0,                       
-                pageHeight - 30,         
-                pageWidth,               
-                30                       
-            );
+                doc.addImage(logoBase64, "PNG", 0, pageHeight - 30, pageWidth, 30);
             }
         } catch (e) {
             console.warn("No se pudo cargar el logo del footer:", e);
         }
 
-        // Guardar PDF         
-        const fileName = `pedido-${new Date().getTime()}.pdf`;         
-        doc.save(fileName);                  
-
+        doc.save(`pedido-${new Date().getTime()}.pdf`);         
         return true;              
-
     } catch (error) {         
         console.error('Error generando PDF:', error);         
         throw error;     
     } 
 }
 
-
-
-
-
-
-
 /**
  * Enviar mensaje de texto a WhatsApp
  */
-function enviarTextoWhatsApp(carrito) {
+function enviarTextoWhatsApp(carrito, metodoPago) {
     const total = CartUtils.calculateTotal(carrito);
     const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
     
@@ -735,25 +814,16 @@ function enviarTextoWhatsApp(carrito) {
     
     mensaje += `📊 *Resumen de compra:*\n`;
     mensaje += `• Total de productos: ${totalItems}\n`;
-    mensaje += `• *Total a pagar: ${total.toFixed(2)}*\n\n`;
-    mensaje += `📅 Fecha: ${new Date().toLocaleDateString('es-EC')} ${new Date().toLocaleTimeString('es-EC')}\n\n`;
-    mensaje += `¡Gracias! 😊`;
-    mensaje += `¡Por favor adjunta el pdf que se ha descargado en tu dispositivo!`;
+    mensaje += `• *Total a pagar: ${total.toFixed(2)}*\n`;
+    mensaje += `• Método de pago: *${metodoPago}*\n\n`;
+    mensaje += `📅 Fecha: ${new Date().toLocaleString('es-EC')}\n\n`;
+    mensaje += `¡Gracias! 😊\nAdjunta el PDF que se descargó automáticamente ✅`;
     
-    // Formatear número de WhatsApp
-    const numeroFormateado = CART_CONFIG.whatsappNumber.replace(/[^0-9]/g, '');
-    
-    // URL de WhatsApp con mensaje prellenado
-
     const urlWhatsApp = `https://wa.me/${CART_CONFIG.whatsappNumber}?text=${encodeURIComponent(mensaje)}`;
-    
     notificacion.info('Redirigiendo a WhatsApp...', '💬 Abriendo WhatsApp', 3000);
-    
-    // Abrir WhatsApp
-    setTimeout(() => {
-        window.open(urlWhatsApp, '_blank');
-    }, 1000);
+    setTimeout(() => { window.open(urlWhatsApp, '_blank'); }, 1000);
 }
+
 
 /**
  * Eliminar producto específico del carrito
