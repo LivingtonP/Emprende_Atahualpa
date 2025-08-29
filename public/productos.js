@@ -86,7 +86,7 @@ async function obtenerProductos(forzarActualizacion = false) {
                     imagen: data.imagen || 'https://via.placeholder.com/300x300?text=Sin+Imagen',
                     marca: data.marca || 'Sin marca',
                     descripcion: data.descripcion || '',
-                    tallas: data.tallas || [],
+                    tallas: data.talla || [],
                     precio: parseFloat(data.precio) || 0,
                     stock: parseInt(data.stock) || 0
                 });
